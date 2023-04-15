@@ -1,0 +1,23 @@
+
+modaddr 0x1100000
+
+entry  ankh
+bootstrap bootstrap -serial
+kernel fiasco -serial_esc
+roottask moe rom/ankh.cfg
+module ankh.cfg
+module ankh.io
+module Aw.lua
+module l4re
+module io
+module ned
+module ankh
+module morpong
+module morping
+module wget_clnt
+
+module lwip_test
+module test/L4Re.html
+
+
+

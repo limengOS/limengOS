@@ -1,0 +1,3 @@
+<map id="L4::Thread::Modify_senders" name="L4::Thread::Modify_senders">
+<area shape="rect" id="node1" title="Class wrapping a list of rules which modify the sender label of IPC messages inbound to this thread." alt="" coords="5,5,155,112"/>
+</map>

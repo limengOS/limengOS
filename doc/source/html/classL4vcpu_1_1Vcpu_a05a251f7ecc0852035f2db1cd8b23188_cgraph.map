@@ -1,0 +1,6 @@
+<map id="L4vcpu::Vcpu::irq_disable_save" name="L4vcpu::Vcpu::irq_disable_save">
+<area shape="rect" id="node1" title="Disable the vCPU for event delivery and return previous state." alt="" coords="5,5,231,32"/>
+<area shape="rect" id="node2" href="$group__api__libvcpu.html#gaa1e7797e4ed8b7dabd40c9849f5c362c" title="Disable a vCPU for event delivery and return previous state." alt="" coords="279,5,460,32"/>
+<area shape="rect" id="node3" href="$group__api__libvcpu.html#gac8dd177f5382328e3922754cc9d36b28" title="Disable a vCPU for event delivery." alt="" coords="508,5,651,32"/>
+<area shape="rect" id="node4" href="$group__l4sys__defines.html#ga4accdcabe8bddb4964f8986855e7c728" title="Memory barrier." alt="" coords="699,5,783,32"/>
+</map>

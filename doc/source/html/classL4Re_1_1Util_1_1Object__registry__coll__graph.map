@@ -1,0 +1,10 @@
+<map id="L4Re::Util::Object_registry" name="L4Re::Util::Object_registry">
+<area shape="rect" id="node1" title="A registry that manages server objects and their attached IPC gates for a single server loop for a sp..." alt="" coords="353,867,501,1047"/>
+<area shape="rect" id="node2" href="$classL4_1_1Basic__registry.html" title="This registry returns the corresponding server object based on the label of an Ipc_gate." alt="" coords="5,653,143,745"/>
+<area shape="rect" id="node3" href="$classL4_1_1Registry__iface.html" title="Abstract interface for object registries." alt="" coords="167,624,317,775"/>
+<area shape="rect" id="node4" href="$classL4_1_1Cap.html" title=" " alt="" coords="342,609,513,789"/>
+<area shape="rect" id="node5" href="$classL4_1_1Cap__base.html" title="Base class for all kinds of capabilities." alt="" coords="424,5,663,303"/>
+<area shape="rect" id="node6" href="$classL4_1_1Cap.html" title="C++ interface for capabilities." alt="" coords="484,352,603,532"/>
+<area shape="rect" id="node8" href="$classL4_1_1Cap.html" title=" " alt="" coords="537,609,705,789"/>
+<area shape="rect" id="node7" href="$classL4_1_1Ipc__svr_1_1Server__iface.html" title="Interface for server&#45;loop related functions." alt="" coords="729,595,912,804"/>
+</map>

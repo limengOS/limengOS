@@ -1,0 +1,3 @@
+provides: dde-linux32 dde-linux32_net dde-linux32_block dde-linux32_char ddekit
+requires: l4sys log l4util libc libio libirq stdlibs l4re_c libl4re-vfs
+Maintainer: li_mck@qq.com

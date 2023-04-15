@@ -1,0 +1,3 @@
+provides: ti-omap-335x
+requires: libio libio-vbus dde-linux32
+maintainer: lili@novel-supertv.com

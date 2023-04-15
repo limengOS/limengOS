@@ -1,0 +1,10 @@
+<map id="L4::Vcon" name="L4::Vcon">
+<area shape="rect" id="node1" title="C++ L4 Vcon interface, see Virtual Console for the C interface." alt="" coords="155,773,304,924"/>
+<area shape="rect" id="node7" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="139,973,319,1095"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="139,617,319,724"/>
+<area shape="rect" id="node3" href="$classL4_1_1Icu.html" title="C++ Icu interface, see Interrupt controller for the C interface." alt="" coords="118,403,229,568"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="5,204,221,325"/>
+<area shape="rect" id="node5" href="$classL4_1_1Irq__eoi.html" title="Interface for sending an unmask message to an object." alt="" coords="20,20,119,97"/>
+<area shape="rect" id="node6" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="163,5,371,112"/>
+<area shape="rect" id="node8" href="$classL4Re_1_1Log.html" title="Log interface class." alt="" coords="187,1144,272,1236"/>
+</map>

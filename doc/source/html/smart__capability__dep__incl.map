@@ -1,0 +1,29 @@
+<map id="l4/sys/smart_capability" name="l4/sys/smart_capability">
+<area shape="rect" id="node1" title="L4::Capability class." alt="" coords="1051,5,1225,32"/>
+<area shape="rect" id="node2" href="$cap__alloc.html" title="Abstract capability&#45;allocator interface." alt="" coords="921,80,1037,107"/>
+<area shape="rect" id="node18" href="$util_2cap__alloc.html" title="Capability allocator." alt="" coords="1277,80,1418,107"/>
+<area shape="rect" id="node3" href="$vfs_8h_source.html" title=" " alt="" coords="529,155,656,181"/>
+<area shape="rect" id="node14" href="$shared__cap.html" title="Shared_cap / Shared_del_cap." alt="" coords="5,326,135,353"/>
+<area shape="rect" id="node15" href="$unique__cap.html" title="Unique_cap / Unique_del_cap." alt="" coords="864,237,993,263"/>
+<area shape="rect" id="node16" href="$env__ns_source.html" title=" " alt="" coords="967,155,1093,181"/>
+<area shape="rect" id="node17" href="$util_2event.html" title=" " alt="" coords="1073,237,1190,263"/>
+<area shape="rect" id="node4" href="$backend_source.html" title=" " alt="" coords="519,237,667,263"/>
+<area shape="rect" id="node12" href="$fd__store_8h_source.html" title=" " alt="" coords="211,229,351,271"/>
+<area shape="rect" id="node5" href="$ns__fs_8h_source.html" title=" " alt="" coords="774,326,947,353"/>
+<area shape="rect" id="node7" href="$vfs__impl_8h_source.html" title=" " alt="" coords="255,408,402,449"/>
+<area shape="rect" id="node8" href="$ro__file_8h_source.html" title=" " alt="" coords="609,319,749,360"/>
+<area shape="rect" id="node10" href="$vcon__stream_8h_source.html" title=" " alt="" coords="427,319,585,360"/>
+<area shape="rect" id="node6" href="$ns__fs__impl_8h_source.html" title=" " alt="" coords="913,408,1056,449"/>
+<area shape="rect" id="node9" href="$ro__file__impl_8h_source.html" title=" " alt="" coords="609,408,749,449"/>
+<area shape="rect" id="node11" href="$vcon__stream__impl_8h_source.html" title=" " alt="" coords="427,408,585,449"/>
+<area shape="rect" id="node13" href="$fd__store__impl_8h_source.html" title=" " alt="" coords="211,319,351,360"/>
+<area shape="rect" id="node19" href="$server_2l4virtio_source.html" title=" " alt="" coords="1519,229,1648,271"/>
+<area shape="rect" id="node21" href="$br__manager_source.html" title=" " alt="" coords="1500,155,1659,181"/>
+<area shape="rect" id="node22" href="$icu__svr_source.html" title=" " alt="" coords="1863,155,1989,181"/>
+<area shape="rect" id="node24" href="$object__registry_source.html" title=" " alt="" coords="1215,237,1392,263"/>
+<area shape="rect" id="node26" href="$util_2shared__cap.html" title="Shared_cap / Shared_del_cap." alt="" coords="1683,155,1838,181"/>
+<area shape="rect" id="node27" href="$util_2unique__cap.html" title="Unique_cap / Unique_del_cap." alt="" coords="1270,155,1425,181"/>
+<area shape="rect" id="node20" href="$server_2virtio-block_source.html" title=" " alt="" coords="1517,319,1647,360"/>
+<area shape="rect" id="node23" href="$event__svr_source.html" title=" " alt="" coords="1854,237,1998,263"/>
+<area shape="rect" id="node25" href="$client_2virtio-block_source.html" title=" " alt="" coords="1305,319,1429,360"/>
+</map>

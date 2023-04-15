@@ -1,0 +1,6 @@
+<map id="L4::Icu" name="L4::Icu">
+<area shape="rect" id="node1" title="C++ Icu interface, see Interrupt controller for the C interface." alt="" coords="87,375,198,540"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="35,204,251,325"/>
+<area shape="rect" id="node3" href="$classL4_1_1Irq__eoi.html" title="Interface for sending an unmask message to an object." alt="" coords="5,20,104,97"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="128,5,336,112"/>
+</map>

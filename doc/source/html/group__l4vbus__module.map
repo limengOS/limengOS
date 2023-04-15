@@ -1,0 +1,5 @@
+<map id="L4 Vbus functions" name="L4 Vbus functions">
+<area shape="rect" id="node1" href="$group__l4vbus__gpio__module.html" title=" " alt="" coords="191,5,359,31"/>
+<area shape="rect" id="node2" title="C interface of the Vbus API." alt="" coords="5,31,143,56"/>
+<area shape="rect" id="node3" href="$group__l4vbus__pci__module.html" title=" " alt="" coords="196,55,353,80"/>
+</map>

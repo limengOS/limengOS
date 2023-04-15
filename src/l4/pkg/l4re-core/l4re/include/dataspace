@@ -1,0 +1,292 @@
+// -*- Mode: C++ -*-
+// vim:ft=cpp
+/**
+ * \file
+ * Dataspace interface.
+ */
+/*
+ * (c) 2008-2009 Adam Lackorzynski <adam@os.inf.tu-dresden.de>,
+ *               Alexander Warg <warg@os.inf.tu-dresden.de>,
+ *               Björn Döbel <doebel@os.inf.tu-dresden.de>,
+ *               Torsten Frenzel <frenzel@os.inf.tu-dresden.de>
+ *     economic rights: Technische Universität Dresden (Germany)
+ *
+ * This file is part of TUD:OS and distributed under the terms of the
+ * GNU General Public License 2.
+ * Please see the COPYING-GPL-2 file for details.
+ *
+ * As a special exception, you may use this file as part of a free software
+ * library without restriction.  Specifically, if other files instantiate
+ * templates or use macros or inline functions from this file, or you compile
+ * this file and link it with other files to produce an executable, this
+ * file does not by itself cause the resulting executable to be covered by
+ * the GNU General Public License.  This exception does not however
+ * invalidate any other reasons why the executable file might be covered by
+ * the GNU General Public License.
+ */
+
+#pragma once
+
+#include <l4/sys/types.h>
+#include <l4/sys/l4int.h>
+#include <l4/sys/capability>
+#include <l4/re/protocols.h>
+#include <l4/sys/cxx/ipc_types>
+#include <l4/sys/cxx/ipc_iface>
+#include <l4/sys/cxx/types>
+
+namespace L4Re
+{
+
+  // MISSING:
+  // * size support in map, mapped size in reply
+
+/**
+ * Interface for memory-like objects.
+ *
+ * Dataspaces are a central abstraction provided by L4Re. A dataspace is
+ * an abstraction for any thing that is available via usual memory access
+ * instructions. A dataspace can be a file, as well as the memory-mapped
+ * registers of a device, or anonymous memory, such as a heap.
+ *
+ * The dataspace interface defines a set of methods that allow any kind
+ * of dataspace to be attached (mapped) to the virtual address space of
+ * an L4 task and then be accessed via memory-access instructions.
+ * The L4Re::Rm interface can be used to attach a dataspace to a
+ * virtual address space of a task paged by a certain instance of a region map.
+ *
+ * \includefile{l4/re/dataspace}
+ */
+class L4_EXPORT Dataspace :
+  public L4::Kobject_t<Dataspace, L4::Kobject, L4RE_PROTO_DATASPACE,
+                       L4::Type_info::Demand_t<1> >
+{
+public:
+
+  /** Dataspace flags definitions. */
+  struct F
+  {
+    enum
+    {
+      Caching_shift = 4,    ///< shift value for caching flags
+    };
+
+    /**
+     * Flags for map operations.
+     */
+    enum Flags
+    {
+      /// Request read-only mapping.
+      R   = L4_FPAGE_RO,
+      /// Request read-only mapping.
+      Ro  = L4_FPAGE_RO,
+      /// Request writable mapping (R + W)
+      RW  = L4_FPAGE_RW,
+      /// Request write-only memory
+      W   = L4_FPAGE_W,
+      X   = L4_FPAGE_X,
+      RX  = L4_FPAGE_RX,
+      RWX = L4_FPAGE_RWX,
+      /// All rights bits available for mappings
+      Rights_mask = 0x0f,
+
+      /// request normal memory mapping
+      Normal        = 0x00,
+      /// request normal memory mapping
+      Cacheable     = Normal,
+      /// request bufferable (write buffered) mappings
+      Bufferable    = 0x10,
+      /// request uncacheable memory mappings
+      Uncacheable   = 0x20,
+      /// mask for caching flags
+      Caching_mask  = 0x30,
+    };
+
+    L4_TYPES_FLAGS_OPS_DEF(Flags);
+  };
+
+  struct Flags : L4::Types::Flags_ops_t<Flags>
+  {
+    unsigned long raw;
+    Flags() = default;
+    explicit constexpr Flags(unsigned long f) : raw(f) {}
+    constexpr Flags(F::Flags f) : raw(f) {}
+    constexpr bool r() const { return raw & L4_FPAGE_RO; }
+    constexpr bool w() const { return raw & L4_FPAGE_W; }
+    constexpr bool x() const { return raw & L4_FPAGE_X; }
+
+    constexpr unsigned long fpage_rights() const
+    { return raw & 0xf; }
+  };
+
+  typedef l4_uint64_t Size;
+  typedef l4_uint64_t Offset;
+  typedef l4_uint64_t Map_addr;
+
+  /**
+   * Information about the dataspace.
+   */
+  struct Stats
+  {
+    Size size;    ///< size
+    Flags flags;  ///< flags
+  };
+
+
+  /**
+   * Request a flex-page mapping from the dataspace.
+   *
+   * \param offset      Offset to start within dataspace
+   * \param flags       Dataspace flags, see #L4Re::Dataspace::F::Flags.
+   * \param local_addr  Local address to map to.
+   * \param min_addr    Defines start of receive window.
+   *                    (Rounded down to page size.)
+   * \param max_addr    Defines end of receive window.
+   *                    (Rounded up to page size.)
+   *
+   * \retval L4_EOK      Success
+   * \retval -L4_ERANGE  Invalid offset.
+   * \retval -L4_EPERM   Insufficient permission to map with requested rights.
+   * \retval <0          IPC errors
+   *
+   * The map call will attempt to map the largest possible flexpage that
+   * covers the given local address and still fits into the region
+   * defined by `min_addr` and `max_addr`. If the given region is
+   * invalid or does not overlap the local address, the smallest valid
+   * page size is used.
+   */
+  long map(Offset offset, Flags flags, Map_addr local_addr,
+           Map_addr min_addr, Map_addr max_addr) const noexcept;
+
+  /**
+   * Map a part of a dataspace into a local memory area.
+   *
+   * \param offset      Offset to start within dataspace.
+   * \param flags       Dataspace flags, see #L4Re::Dataspace::F::Flags.
+   * \param min_addr    (Inclusive) start of the receive area.
+   * \param max_addr    (Exclusive) end of receive area.
+   *
+   * \retval L4_EOK      Success
+   * \retval -L4_ERANGE  Invalid offset or receive area larger than
+   *                     the dataspace.
+   * \retval -L4_EPERM   Insufficient permission to map with requested rights.
+   * \retval <0          IPC errors
+   *
+   * This is a convenience function which maps flex-pages consecutively into
+   * the given memory area in the local task. The area is expected to be filled
+   * completely. If the dataspace is not large enough to provide the mappings
+   * for the entire size of the area, then an error is returned. Mappings may
+   * or may not have been already established at that point.
+   *
+   * `offset` and `min_addr` are rounded down to the
+   * next `L4_PAGESIZE` boundary when necessary. `max_addr` is rounded up
+   * to the page boundary. If the resulting maximum address is less or equal
+   * than the minimum address, then the function is a noop.
+   */
+  long map_region(Offset offset, Flags flags,
+                  Map_addr min_addr, Map_addr max_addr) const noexcept;
+
+  /**
+   * Clear parts of a dataspace.
+   *
+   * \param offset    Offset within dataspace (in bytes).
+   * \param size      Size of region to clear (in bytes).
+   *
+   * \retval >=0          Success.
+   * \retval -L4_ERANGE   Given range is outside the dataspace.
+   *                      (A dataspace provider may also silently ignore areas
+   *                      outside the dataspace.)
+   * \retval -L4_EACCESS  Dataspace is read-only.
+   * \retval <0           IPC errors
+   *
+   * Zeroes out the memory. Depending on the type of memory
+   * the memory could also be deallocated and replaced by
+   * a shared zero-page.
+   */
+  L4_RPC(long, clear, (Offset offset, Size size));
+
+  /**
+   * Allocate a range in the dataspace.
+   *
+   * \param offset  Offset in the dataspace, in bytes.
+   * \param size    Size of the range, in bytes.
+   *
+   * \retval L4_EOK      Success
+   * \retval -L4_ERANGE  Given range is outside the dataspace.
+   *                     (A dataspace provider may also silently ignore areas
+   *                     outside the dataspace.)
+   * \retval -L4_ENOMEM  Not enough memory available.
+   * \retval <0          IPC errors
+   *
+   * On success, at least the given range is guaranteed to be allocated. The
+   * dataspace manager may also allocate more memory due to page granularity.
+   *
+   * The memory is allocated with the same rights as the dataspace
+   * capability.
+   */
+  L4_RPC(long, allocate, (Offset offset, Size size));
+
+  /**
+   * Copy contents from another dataspace.
+   *
+   * \param dst_offs    Offset in destination dataspace.
+   * \param src         Source dataspace to copy from.
+   * \param src_offs    Offset in the source dataspace.
+   * \param size        Size to copy (in bytes).
+   *
+   * \retval L4_EOK       Success
+   * \retval -L4_EACCESS  Destination dataspace not writable.
+   * \retval -L4_EINVAL   Invalid parameter supplied.
+   * \retval <0           IPC errors
+   *
+   * The copy operation may use copy-on-write mechanisms. The operation may
+   * also fail if both dataspaces are not from the same dataspace manager
+   * or the dataspace managers do not cooperate.
+   */
+  L4_RPC(long, copy_in, (Offset dst_offs, L4::Ipc::Cap<Dataspace> src,
+                         Offset src_offs, Size size));
+
+  /**
+   * Get size of a dataspace.
+   *
+   * \return Size of the dataspace in bytes.
+   */
+  Size size() const noexcept;
+
+  /**
+   * Get flags of the dataspace.
+   *
+   * \retval >=0 Flags of the dataspace
+   * \retval <0  IPC errors
+   *
+   * \see L4Re::Dataspace::F::Flags
+   */
+  Flags flags() const noexcept;
+
+  /**
+   * Get information on the dataspace.
+   *
+   * \param[out] stats  Dataspace information
+   *
+   * \retval 0   Success
+   * \retval <0  IPC errors
+   */
+  L4_RPC(long, info, (Stats *stats));
+
+  L4_RPC_NF(long, map, (Offset offset, Map_addr spot,
+                        Flags flags, L4::Ipc::Rcv_fpage r,
+                        L4::Ipc::Snd_fpage &fp));
+
+private:
+
+  long __map(Offset offset, unsigned char *order, Flags flags,
+             Map_addr local_addr) const noexcept;
+
+public:
+  typedef L4::Typeid::Rpcs<map_t, clear_t, info_t, copy_in_t,
+                           allocate_t> Rpcs;
+
+};
+
+}
+

@@ -1,0 +1,30 @@
+// vi:ft=cpp
+/*
+ * (c) 2009 Adam Lackorzynski <adam@os.inf.tu-dresden.de>
+ *     economic rights: Technische Universität Dresden (Germany)
+ *
+ * This file is part of TUD:OS and distributed under the terms of the
+ * GNU General Public License 2.
+ * Please see the COPYING-GPL-2 file for details.
+ */
+
+#include <l4/cxx/hlist>
+#include <l4/re/util/object_registry>
+
+#include "server_object.h"
+
+class Object_registry_gc : public L4Re::Util::Object_registry
+{
+public:
+  Object_registry_gc(L4::Ipc_svr::Server_iface *sif);
+
+  L4::Cap<void> register_obj_with_gc(Server_object *o);
+  void gc_step();
+
+private:
+  typedef cxx::H_list<Server_object> Obj_list;
+  typedef Obj_list::Iterator Obj_iter;
+
+  Obj_list _life;
+};
+

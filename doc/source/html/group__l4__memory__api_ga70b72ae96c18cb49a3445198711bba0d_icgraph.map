@@ -1,0 +1,5 @@
+<map id="l4_trunc_page" name="l4_trunc_page">
+<area shape="rect" id="node1" title="Round an address down to the next lower page boundary." alt="" coords="153,31,267,57"/>
+<area shape="rect" id="node2" href="$group__l4util__api.html#gac1e88025beb28c8f090592bf2f046080" title="Touch data area to force mapping (read&#45;only)" alt="" coords="7,5,104,32"/>
+<area shape="rect" id="node3" href="$group__l4util__api.html#ga8e840257faffbb57a49003cfb7d41594" title="Touch data areas to force mapping (read&#45;write)" alt="" coords="5,56,105,83"/>
+</map>

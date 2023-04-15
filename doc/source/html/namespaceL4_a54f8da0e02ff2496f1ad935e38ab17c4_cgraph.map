@@ -1,0 +1,5 @@
+<map id="L4::throw_ipc_exception" name="L4::throw_ipc_exception">
+<area shape="rect" id="node1" title="Throw an L4 IPC error as exception." alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node2" href="$namespaceL4.html#aba0849c4b92afdccbe110489e18dadbd" title="Throw an L4 IPC error as exception." alt="" coords="232,5,411,32"/>
+<area shape="rect" id="node3" href="$structl4__msgtag__t.html#a09c8212b870e6c144fd072dbde5b5262" title="Test if flags indicate an error." alt="" coords="459,5,629,32"/>
+</map>

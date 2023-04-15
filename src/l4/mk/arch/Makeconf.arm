@@ -1,0 +1,29 @@
+CROSS_COMPILE_arm         = arm-linux-gnueabihf-
+LD_EMULATION_CHOICE_arm   = armelf armelf_linux_eabi
+LDFLAGS_arm              += -z max-page-size=0x1000 -z common-page-size=0x1000
+OFORMAT_arm               = elf32-littlearm
+BFD_ARCH_arm              = arm
+L4_KIP_ADDR_arm          ?= 0xaffff000
+L4_STACK_ADDR_arm        ?= 0xb0000000
+
+CARCHFLAGS_arm_armv4      = -march=armv4
+CARCHFLAGS_arm_armv4t     = -march=armv4t
+CARCHFLAGS_arm_armv5      = -march=armv5
+CARCHFLAGS_arm_armv5t     = -march=armv5t
+CARCHFLAGS_arm_armv5te    = $(GCCARMV5TEFPOPT_arm)
+CARCHFLAGS_arm_armv6      = $(GCCARMV6FPOPT_arm)
+CARCHFLAGS_arm_armv6t2    = $(GCCARMV6T2FPOPT_arm)
+CARCHFLAGS_arm_armv6zk    = $(GCCARMV6ZKFPOPT_arm)
+CARCHFLAGS_arm_armv7a     = $(GCCARMV7AFPOPT_arm)
+CARCHFLAGS_arm_armv7r     = $(GCCARMV7RFPOPT_arm)
+
+CCXX_FLAGS_arm   += -marm
+CC_arm            = $(CROSS_COMPILE)gcc
+CXX_arm           = $(CROSS_COMPILE)g++
+FC_arm            = $(CROSS_COMPILE)gfortran
+
+SYSTEMS_ABI    += arm-l4f
+SYSTEMS_PLAIN  += arm
+
+# GCC 4.8.0-4.8.2 showed to be buggy on ARM at least
+CC_BLACKLIST-arm-gcc := 4.8.0 4.8.1 4.8.2

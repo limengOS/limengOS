@@ -1,0 +1,34 @@
+// vi:set ft=cpp: -*- Mode: C++ -*-
+/* SPDX-License-Identifier: GPL-2.0-only or License-Ref-kk-custom */
+/*
+ * Copyright (C) 2013 Technische Universität Dresden.
+ */
+
+#pragma once
+
+namespace cxx {
+
+template< typename T >
+T access_once(T const *a)
+{
+#if 1
+  __asm__ __volatile__ ( "" : "=m"(*const_cast<T*>(a)));
+  T tmp = *a;
+  __asm__ __volatile__ ( "" : "=m"(*const_cast<T*>(a)));
+  return tmp;
+#else
+  return *static_cast<T const volatile *>(a);
+#endif
+}
+
+template< typename T >
+void write_now(T *a, T const &val)
+{
+  __asm__ __volatile__ ( "" : "=m"(*a));
+  *a = val;
+  __asm__ __volatile__ ( "" : : "m"(*a));
+}
+
+
+}
+

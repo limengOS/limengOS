@@ -1,0 +1,17 @@
+
+modaddr 0x0500000
+
+entry  lwip_test
+bootstrap bootstrap -serial
+kernel fiasco -serial_esc
+roottask moe rom/lwip_test.cfg
+module lwip_test.cfg
+module Aw.lua
+module ankh.io
+module l4re
+module io
+module ned
+module ankh
+module lwip_test
+module test/L4Re.html
+

@@ -1,0 +1,4 @@
+<map id="l4_touch_ro" name="l4_touch_ro">
+<area shape="rect" id="node1" title="Touch data area to force mapping (read&#45;only)" alt="" coords="5,5,103,32"/>
+<area shape="rect" id="node2" href="$group__l4__memory__api.html#ga70b72ae96c18cb49a3445198711bba0d" title="Round an address down to the next lower page boundary." alt="" coords="151,5,264,32"/>
+</map>

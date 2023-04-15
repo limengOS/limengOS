@@ -1,0 +1,14 @@
+# vim:set ft=make:
+
+PREPROCESS_PARTS        += generic_tickless_idle
+RAM_PHYS_BASE           := 0x0
+OBJECTS_LIBUART         += uart_16550.o
+CXXFLAGS_uart-libuart   += $(call LIBUART_UART, 16550)
+
+config_IMPL           += config-arm-kirkwood
+mem_layout_IMPL       += mem_layout-arm-kirkwood
+pic_IMPL              += pic-arm-kirkwood
+timer_IMPL            += timer-arm-kirkwood
+timer_tick_IMPL       += timer_tick-single-vector
+reset_IMPL            += reset-arm-kirkwood
+clock_IMPL            += clock-generic

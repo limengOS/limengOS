@@ -1,0 +1,4 @@
+provides: ankh libankh_packet_analyzer liblwip_netif_ankh
+requires: lwip l4util dde-linux32 dde-linux32_net libboost-lite
+          shmc_ringbuf lxfuxlibc libstdc++ ti-omap-335x
+Maintainer: doebel@os.inf.tu-dresden.de

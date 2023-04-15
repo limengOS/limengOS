@@ -1,0 +1,4 @@
+<map id="L4::Ipc::Istream::get" name="L4::Ipc::Istream::get">
+<area shape="rect" id="node1" title="Copy out an array of type T with size elements." alt="" coords="152,5,303,32"/>
+<area shape="rect" id="node2" href="$ipc__stream.html#a4a9b955c1207f1d1e71fd57fac767072" title="Extract one element of type T from the stream s." alt="" coords="5,5,104,32"/>
+</map>

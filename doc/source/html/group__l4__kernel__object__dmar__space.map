@@ -1,0 +1,4 @@
+<map id="DMA space" name="DMA space">
+<area shape="rect" id="node1" title="A DMA space represents a device memory address space managed by an IOMMU." alt="" coords="169,5,264,31"/>
+<area shape="rect" id="node2" href="$group__l4__kernel__object__api.html" title="API of kernel objects." alt="" coords="5,5,121,31"/>
+</map>

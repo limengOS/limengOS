@@ -1,0 +1,8 @@
+<map id="L4Re::Mem_alloc" name="L4Re::Mem_alloc">
+<area shape="rect" id="node1" title="Memory allocation interface." alt="" coords="163,729,296,807"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="139,559,319,680"/>
+<area shape="rect" id="node3" href="$classL4_1_1Factory.html" title="C++ Factory interface, see Factory for the C interface." alt="" coords="97,373,239,509"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="5,189,235,296"/>
+<area shape="rect" id="node5" href="$classL4_1_1Kobject.html" title="Base class for all kinds of kernel objects and remote objects, referenced by capabilities." alt="" coords="19,13,133,105"/>
+<area shape="rect" id="node6" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="172,5,380,112"/>
+</map>

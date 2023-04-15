@@ -1,0 +1,5 @@
+<map id="l4/cxx/bits/smart_ptr_list.h" name="l4/cxx/bits/smart_ptr_list.h">
+<area shape="rect" id="node1" title="Implementation of a list of smart&#45;pointer&#45;managed objects." alt="" coords="80,5,236,47"/>
+<area shape="rect" id="node2" href="$ref__ptr__list.html" title="Implementation of a list of ref&#45;ptr&#45;managed objects." alt="" coords="5,95,140,121"/>
+<area shape="rect" id="node3" href="$unique__ptr__list.html" title="Implementation of a list of unique&#45;ptr&#45;managed objects." alt="" coords="164,95,325,121"/>
+</map>

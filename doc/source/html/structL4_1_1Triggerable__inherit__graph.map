@@ -1,0 +1,12 @@
+<map id="L4::Triggerable" name="L4::Triggerable">
+<area shape="rect" id="node1" title="Interface that allows an object to be triggered by some source." alt="" coords="267,345,385,423"/>
+<area shape="rect" id="node5" href="$classL4_1_1Kobject__2t.html" title=" " alt="" coords="5,472,212,637"/>
+<area shape="rect" id="node7" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="236,494,416,615"/>
+<area shape="rect" id="node9" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="440,494,639,615"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="228,189,424,296"/>
+<area shape="rect" id="node3" href="$classL4_1_1Irq__eoi.html" title="Interface for sending an unmask message to an object." alt="" coords="189,20,287,97"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="311,5,519,112"/>
+<area shape="rect" id="node6" href="$classL4_1_1Irq.html" title="C++ Irq interface, see IRQs for the C interface." alt="" coords="59,687,158,808"/>
+<area shape="rect" id="node8" href="$structL4_1_1Irq__mux.html" title="IRQ multiplexer for shared IRQs." alt="" coords="277,709,375,786"/>
+<area shape="rect" id="node10" href="$structL4_1_1Semaphore.html" title="C++ Kernel&#45;provided semaphore interface, see Kernel&#45;provided semaphore for the C interface." alt="" coords="480,701,599,793"/>
+</map>

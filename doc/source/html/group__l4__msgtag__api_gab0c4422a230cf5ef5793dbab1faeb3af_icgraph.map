@@ -1,0 +1,9 @@
+<map id="l4_msgtag_label" name="l4_msgtag_label">
+<area shape="rect" id="node1" title="Get the protocol of tag." alt="" coords="261,148,391,175"/>
+<area shape="rect" id="node2" href="$group__l4__msgtag__api.html#ga0f2cf0a5f8d4a733f69b94dcc388c2ef" title="Test for exception protocol." alt="" coords="20,5,199,32"/>
+<area shape="rect" id="node3" href="$group__l4__msgtag__api.html#ga463384faf9cb37d3f65f24913e34d687" title="Test for IO&#45;page&#45;fault protocol." alt="" coords="26,57,193,98"/>
+<area shape="rect" id="node4" href="$group__l4__msgtag__api.html#gaf949daa8e7aa7d20743502de15e86dcd" title="Test for page&#45;fault protocol." alt="" coords="17,123,201,149"/>
+<area shape="rect" id="node5" href="$group__l4__msgtag__api.html#gafb02742f6231ff4568412fed96e7e272" title="Test for preemption protocol." alt="" coords="14,173,205,200"/>
+<area shape="rect" id="node6" href="$group__l4__msgtag__api.html#ga047100a8ec6216015fbd1385f5443760" title="Test for sigma0 protocol." alt="" coords="28,224,191,251"/>
+<area shape="rect" id="node7" href="$group__l4__msgtag__api.html#gafc73bad60b56767f6eb04cf4b71838ee" title="Test for system&#45;exception protocol." alt="" coords="5,275,213,301"/>
+</map>

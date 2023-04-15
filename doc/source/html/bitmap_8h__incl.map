@@ -1,0 +1,13 @@
+<map id="l4/libgfxbitmap/bitmap.h" name="l4/libgfxbitmap/bitmap.h">
+<area shape="rect" id="node1" title="Bitmap renderer header file." alt="" coords="205,5,388,32"/>
+<area shape="rect" id="node2" href="$l4_2sys_2types_8h.html" title="Common L4 ABI Data Types." alt="" coords="210,229,322,256"/>
+<area shape="rect" id="node9" href="$view_8h.html" title=" " alt="" coords="303,80,451,107"/>
+<area shape="rect" id="node3" href="$l4_2sys_2l4int_8h.html" title="Fixed sized integer types, generic version." alt="" coords="41,379,147,405"/>
+<area shape="rect" id="node4" href="$compiler_8h.html" title="L4 compiler related defines." alt="" coords="335,379,467,405"/>
+<area shape="rect" id="node6" href="$l4_2sys_2consts_8h.html" title="Common constants." alt="" coords="189,304,308,331"/>
+<area shape="rect" id="node7" href="$____l4__fpage_8h_source.html" title=" " alt="" coords="383,304,530,331"/>
+<area shape="rect" id="node8" href="$____timeout_8h_source.html" title=" " alt="" coords="23,304,165,331"/>
+<area shape="rect" id="node5" title=" " alt="" coords="339,453,462,480"/>
+<area shape="rect" id="node10" href="$dataspace_8h.html" title="Data space C interface." alt="" coords="329,155,475,181"/>
+<area shape="rect" id="node11" href="$colors_8h.html" title=" " alt="" coords="479,229,637,256"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="L4::Ipc_svr::Server_iface::rcv_cap" name="L4::Ipc_svr::Server_iface::rcv_cap">
+<area shape="rect" id="node1" title="Get given receive buffer as typed capability." alt="" coords="5,5,147,47"/>
+<area shape="rect" id="node2" href="$classL4_1_1Ipc__svr_1_1Server__iface.html#a6d3b3d591214378fdc8af857f6eceeb1" title="Get capability slot allocated to the given receive buffer." alt="" coords="195,5,341,47"/>
+</map>

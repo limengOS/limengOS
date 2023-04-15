@@ -1,0 +1,8 @@
+<map id="L4::Scheduler" name="L4::Scheduler">
+<area shape="rect" id="node1" title="C++ interface of the Scheduler kernel object, see Scheduler for the C interface." alt="" coords="171,803,288,924"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="121,632,337,753"/>
+<area shape="rect" id="node3" href="$classL4_1_1Icu.html" title="C++ Icu interface, see Interrupt controller for the C interface." alt="" coords="118,417,229,583"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="5,204,221,325"/>
+<area shape="rect" id="node5" href="$classL4_1_1Irq__eoi.html" title="Interface for sending an unmask message to an object." alt="" coords="20,20,119,97"/>
+<area shape="rect" id="node6" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="163,5,371,112"/>
+</map>

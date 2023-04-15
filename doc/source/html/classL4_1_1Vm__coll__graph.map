@@ -1,0 +1,8 @@
+<map id="L4::Vm" name="L4::Vm">
+<area shape="rect" id="node1" title="Virtual machine host address space." alt="" coords="175,773,292,880"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="143,617,323,724"/>
+<area shape="rect" id="node3" href="$classL4_1_1Task.html" title="C++ interface of the Task kernel object, see Task for the C interface." alt="" coords="105,388,239,568"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="5,204,221,325"/>
+<area shape="rect" id="node5" href="$classL4_1_1Kobject.html" title="Base class for all kinds of kernel objects and remote objects, referenced by capabilities." alt="" coords="12,13,127,105"/>
+<area shape="rect" id="node6" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="171,5,379,112"/>
+</map>

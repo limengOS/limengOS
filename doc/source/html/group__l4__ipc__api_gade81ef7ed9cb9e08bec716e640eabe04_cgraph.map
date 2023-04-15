@@ -1,0 +1,4 @@
+<map id="l4_ipc_wait" name="l4_ipc_wait">
+<area shape="rect" id="node1" title="Wait for an incoming message from any possible sender." alt="" coords="5,5,100,32"/>
+<area shape="rect" id="node2" href="$group__l4__ipc__api.html#ga1caa56d45e0453b3002e7f5cfdb0dec7" title="Generic L4 object invocation." alt="" coords="148,5,208,32"/>
+</map>

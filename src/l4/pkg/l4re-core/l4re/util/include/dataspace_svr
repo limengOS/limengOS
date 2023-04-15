@@ -1,0 +1,267 @@
+// vi:set ft=cpp: -*- Mode: C++ -*-
+/*
+ * (c) 2008-2009 Adam Lackorzynski <adam@os.inf.tu-dresden.de>,
+ *               Alexander Warg <warg@os.inf.tu-dresden.de>,
+ *               Torsten Frenzel <frenzel@os.inf.tu-dresden.de>
+ *     economic rights: Technische Universität Dresden (Germany)
+ *
+ * This file is part of TUD:OS and distributed under the terms of the
+ * GNU General Public License 2.
+ * Please see the COPYING-GPL-2 file for details.
+ *
+ * As a special exception, you may use this file as part of a free software
+ * library without restriction.  Specifically, if other files instantiate
+ * templates or use macros or inline functions from this file, or you compile
+ * this file and link it with other files to produce an executable, this
+ * file does not by itself cause the resulting executable to be covered by
+ * the GNU General Public License.  This exception does not however
+ * invalidate any other reasons why the executable file might be covered by
+ * the GNU General Public License.
+ */
+#pragma once
+
+#include <cstring>
+#include <cstddef>
+#include <l4/sys/types.h>
+#include <l4/cxx/list>
+#include <l4/cxx/minmax>
+#include <l4/re/dataspace>
+#include <l4/re/dataspace-sys.h>
+#include <l4/sys/cxx/ipc_legacy>
+
+namespace L4Re { namespace Util {
+
+/**
+ * Dataspace server class.
+ *
+ * The default implementation of the interface provides a continuous dataspace
+ * with contiguous pages.
+ */
+class Dataspace_svr
+{
+private:
+  typedef L4::Ipc::Gen_fpage<L4::Ipc::Snd_item> Snd_fpage;
+public:
+  L4_RPC_LEGACY_DISPATCH(L4Re::Dataspace);
+
+  typedef Snd_fpage::Map_type Map_type;
+  typedef Snd_fpage::Cacheopt Cache_type;
+
+  Dataspace_svr() noexcept
+  : _ds_start(0), _ds_size(0), _map_flags(Snd_fpage::Map),
+    _cache_flags(Snd_fpage::Cached)
+  {}
+
+  virtual ~Dataspace_svr() noexcept {}
+
+  /**
+   * Map a region of the dataspace
+   *
+   * \param      offset      Offset to start within data space
+   * \param      local_addr  Local address to map to.
+   * \param      flags       Dataspace flags, see #L4Re::Dataspace::F::Flags.
+   * \param      min_addr    Defines start of receive window.
+   * \param      max_addr    Defines end of receive window.
+   * \param[out] memory      Send fpage to map
+   *
+   * \retval 0   Success
+   * \retval <0  Error
+   */
+  int map(Dataspace::Offset offset,
+          Dataspace::Map_addr local_addr,
+          Dataspace::Flags flags,
+          Dataspace::Map_addr min_addr,
+          Dataspace::Map_addr max_addr,
+          L4::Ipc::Snd_fpage &memory);
+
+  /**
+   * A hook that is called as the first operation in each map
+   *        request.
+   * \param offs  Offs param to map
+   * \param flags Flags param to map
+   * \param min   Min param to map
+   * \param max   Max param to map
+   * \retval <0   Error and the map request will be aborted with that error.
+   * \retval >=0  Success
+   *
+   * \see map
+   */
+  virtual int map_hook(Dataspace::Offset offs,
+                       Dataspace::Flags flags,
+                       Dataspace::Map_addr min,
+                       Dataspace::Map_addr max)
+  {
+    (void)offs; (void)flags; (void)min; (void)max;
+    return 0;
+  }
+
+  /**
+   * Take a reference to this dataspace
+   *
+   * Default does nothing.
+   */
+  virtual void take() noexcept
+  {}
+
+  /**
+   * Release a reference to this dataspace
+   *
+   * \return Number of references to the dataspace
+   *
+   * Default does nothing and returns always zero.
+   */
+  virtual unsigned long release() noexcept
+  { return 0; }
+
+  /**
+   * Copy from src dataspace to this destination dataspace
+   *
+   * \param dst_offs  Offset into the destination dataspace
+   * \param src_id    Local id of the source dataspace
+   * \param src_offs  Offset into the source dataspace
+   * \param size      Number of bytes to copy
+   *
+   * \retval >=0  Number of bytes copied
+   * \retval <0   An error occured. The error code may depend on the
+   *              implementation.
+   */
+  virtual long copy(l4_addr_t dst_offs, l4_umword_t src_id,
+                    l4_addr_t src_offs, unsigned long size) noexcept
+  {
+    (void)dst_offs; (void)src_id; (void)src_offs; (void)size;
+    return -L4_ENODEV;
+  }
+
+  /**
+   * Clear a region in the dataspace
+   *
+   * \param offs Start of the region
+   * \param size Size of the region
+   *
+   * \retval 0   Success
+   * \retval <0  Error
+   */
+  virtual long clear(unsigned long offs, unsigned long size) const noexcept;
+
+  /**
+   * Allocate a region within a dataspace
+   *
+   * \param offset  Offset in the dataspace, in bytes.
+   * \param size    Size of the range, in bytes.
+   * \param access  Access mode with which the memory backing the dataspace
+   *                region should be allocated.
+   *
+   * \retval 0   Success
+   * \retval <0  Error
+   */
+  virtual long allocate(l4_addr_t offset, l4_size_t size, unsigned access) noexcept
+  { (void)offset; (void)size; (void)access; return -L4_ENODEV; }
+
+  /**
+   * Define the size of the flexpage to map
+   *
+   * \return flexpage size
+   */
+  virtual unsigned long page_shift() const noexcept
+  { return L4_LOG2_PAGESIZE; }
+
+  /**
+   * Return whether the dataspace is static
+   *
+   * \return True if dataspace is static
+   */
+  virtual bool is_static() const noexcept
+  { return true; }
+
+
+  long op_map(L4Re::Dataspace::Rights rights,
+              L4Re::Dataspace::Offset offset,
+              L4Re::Dataspace::Map_addr spot,
+              L4Re::Dataspace::Flags flags,
+              L4::Ipc::Snd_fpage &fp)
+  {
+    auto rf = map_flags(rights);
+
+    if (!rf.w() && flags.w())
+      return -L4_EPERM;
+
+    return map(offset, spot, flags & rf, 0, ~0, fp);
+  }
+
+  long op_allocate(L4Re::Dataspace::Rights rights,
+                   L4Re::Dataspace::Offset offset,
+                   L4Re::Dataspace::Size size)
+  { return allocate(offset, size, rights & 3); }
+
+  long op_copy_in(L4Re::Dataspace::Rights rights,
+                  L4Re::Dataspace::Offset dst_offs,
+                  L4::Ipc::Snd_fpage const &src_cap,
+                  L4Re::Dataspace::Offset src_offs,
+                  L4Re::Dataspace::Size sz)
+  {
+    if (!src_cap.id_received())
+      return -L4_EINVAL;
+
+    if (!(rights & L4_CAP_FPAGE_W))
+      return -L4_EACCESS;
+
+    if (sz == 0)
+      return L4_EOK;
+
+    return copy(dst_offs, src_cap.data(), src_offs, sz);
+  }
+
+  long op_info(L4Re::Dataspace::Rights rights, L4Re::Dataspace::Stats &s)
+  {
+    s.size = size();
+    // only return writable if really writable
+    s.flags = Dataspace::Flags(0);
+    if (map_flags(rights).w())
+      s.flags |= Dataspace::F::W;
+    return L4_EOK;
+  }
+
+  long op_clear(L4Re::Dataspace::Rights rights,
+                L4Re::Dataspace::Offset offset,
+                L4Re::Dataspace::Size size)
+  {
+    if (!map_flags(rights).w())
+      return -L4_EACCESS;
+
+    return clear(offset, size);
+  }
+
+
+protected:
+  unsigned long size() const noexcept
+  { return _ds_size; }
+  unsigned long map_flags() const noexcept
+  { return _map_flags; }
+  unsigned long page_size() const noexcept
+  { return 1UL << page_shift(); }
+  unsigned long round_size() const noexcept
+  { return l4_round_size(size(), page_shift()); }
+  bool check_limit(l4_addr_t offset) const noexcept
+  { return offset < round_size(); }
+
+  L4Re::Dataspace::Flags
+  map_flags(L4Re::Dataspace::Rights rights = L4_CAP_FPAGE_W) const noexcept
+  {
+    auto f = (_rw_flags & L4Re::Dataspace::Flags(0x0f)) | L4Re::Dataspace::F::Caching_mask;
+    if (!(rights & L4_CAP_FPAGE_W))
+      f &= ~L4Re::Dataspace::F::W;
+
+    return f;
+  }
+
+protected:
+  void size(unsigned long size) noexcept { _ds_size = size; }
+
+  l4_addr_t _ds_start;
+  l4_size_t _ds_size;
+  Map_type _map_flags;
+  Cache_type _cache_flags;
+  L4Re::Dataspace::Flags _rw_flags;
+};
+
+}}

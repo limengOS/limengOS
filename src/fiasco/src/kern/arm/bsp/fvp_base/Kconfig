@@ -1,0 +1,15 @@
+# PF: FVP_BASE
+# PFDESCR: ARM FVP Base Platform
+# PFDEPENDS: ARM
+# PFSELECT: ARM_GIC HAVE_ARM_GICV3 HAVE_ARM_GIC_MSI HAS_ARM_PSCI
+# PFSELECT: CAN_ARM_CPU_CORTEX_A53 CAN_ARM_CPU_CORTEX_A72
+# PFSELECT: CAN_ARM_CPU_CORTEX_A57
+
+config PF_ARM_FVP_BASE_PT48
+	bool "Support user-level address space of 48bits (256TB)"
+	depends on CPU_VIRT
+	select ARM_PT48
+	help
+	  Build Fiasco with 4-level page-tables for user-level tasks.
+	  Requires that FVP runs with a configuration that supports
+	  48bit address spaces in stage-2 page-tables.

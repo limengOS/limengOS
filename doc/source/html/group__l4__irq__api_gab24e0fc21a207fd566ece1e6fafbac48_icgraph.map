@@ -1,0 +1,4 @@
+<map id="l4_irq_trigger" name="l4_irq_trigger">
+<area shape="rect" id="node1" title="Trigger an IRQ." alt="" coords="191,5,299,32"/>
+<area shape="rect" id="node2" href="$group__l4__semaphore__api.html#ga7fc3931fba29e35a6690639c74774c43" title="Semaphore up operation (wrapper for trigger())." alt="" coords="5,5,143,32"/>
+</map>

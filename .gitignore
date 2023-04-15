@@ -1,0 +1,7 @@
+.*.swp
+.*.swo
+*.vim
+tags
+junk*
+*.o.d
+.*.d

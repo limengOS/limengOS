@@ -1,0 +1,79 @@
+# -*- makefile -*-
+# vi:se ft=make:
+
+# Makerules for all unit test targets.
+#
+# Each unit test comes in its own kernel binary. Everything is preprocessed and
+# compiled together. The linker stage adds the object file of the unit test to
+# the link rule.
+# All binaries are created in the utest/ directory.
+
+# select all test_* files to generate a build target for each.
+UTEST_TESTS-$(CONFIG_SCHED_FIXED_PRIO) = $(filter test_%,$(INTERFACES_UTEST))
+UTEST_TESTS += $(UTEST_TESTS-y)
+
+# the final binaries go into the utest/ folder.
+UTEST_BINARIES = $(addprefix utest/,$(UTEST_TESTS))
+
+# select the utest framework files to add to each test build target.
+UTEST_FRAMEWORK = $(filter utest_fw%,$(OBJ_UTEST))
+
+# class implementations available for all test build targets.
+UTEST_COMMON = $(filter common_%,$(INTERFACES_UTEST))
+
+
+# default target for the UTEST subsystem, add all test binaries as prerequisites.
+utest_subsys: $(UTEST_BINARIES)
+
+# the expected_* and config_* files go into the utest/ folder as well.
+utest_suppl: $(addprefix utest/,$(UTEST_SUPPL))
+
+# Ensure the utest folder exists before the target is build
+$(UTEST_BINARIES): | utest
+
+# create utest folder
+utest:
+	@mkdir -p utest
+
+# Generate link rules for each unit test binary.
+$(foreach tname,$(UTEST_TESTS),\
+	$(eval $(call gen_kernel_rules,\
+		utest/$(tname),\
+		$(tname).debug,\
+		$$(UTEST_FRAMEWORK) $$(filter $(tname)%,$$(OBJ_UTEST))\
+		$$(if $$(UTEST_COMMON),\
+			$$(filter $(UTEST_COMMON)%,$$(OBJ_UTEST))))))
+
+define gen_utest_suppl_rule
+$(1): $(2) globalconfig.out
+	$$(COMP_MESSAGE)
+	$$(VERBOSE)$$(CP) $$< $$@
+endef
+
+# Generate copy rule for each 'expected_' file.
+# By default, for 'test_foo.cpp', 'expected_foo' is used
+# unless expected_foo-XARCH (e.g. 'expected_foo-ia32') exists
+# unless expected_foo-XARCH-BITS (e.g. 'expected_foo-mips-64') exists
+# unless expected_foo-bar (e.g. 'expected_foo-arm-nolpae') exists where
+# 'bar' is evaluated from $(expected_foo-config).
+$(foreach tname,$(UTEST_SUPPL),\
+	$(eval $(call gen_utest_suppl_rule,\
+		utest/$(tname),\
+		$(firstword $(wildcard $(foreach d,$(ALL_UTEST_DIRS),\
+			$(foreach f,\
+				$(if $($(tname)-config),\
+					$(tname)-$($(tname)-config),) \
+				$(tname)-$(CONFIG_XARCH)-$(BITS) \
+				$(tname)-$(CONFIG_XARCH) $(tname),\
+				$(srcdir)/$(d)/$(f))))))))
+
+# Generate checksum rules for each unit test binary.
+ifneq ($(filter CHECKSUM,$(SUBSYSTEMS)),)
+$(foreach tname,$(UTEST_TESTS),\
+	$(eval $(call all_checksum_rules,\
+		utest/$(tname),$(tname).debug,-$(tname))))
+endif
+
+clean-UTEST:
+	$(RM) $(OBJ_UTEST) $(addprefix utest/,$(UTEST_TESTS) $(UTEST_SUPPL)) \
+		$(patsubst %,%.debug,$(UTEST_TESTS))

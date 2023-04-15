@@ -1,0 +1,5 @@
+<map id="L4vbus::Icu::vicu" name="L4vbus::Icu::vicu">
+<area shape="rect" id="node1" title="Request an L4::Icu capability for this Vbus&#39;s virtual ICU." alt="" coords="5,31,136,57"/>
+<area shape="rect" id="node2" href="$classL4_1_1Cap__base.html#a90ff089ca2442b128c2b2b0e1c22c6d7" title="Return capability selector." alt="" coords="193,5,332,32"/>
+<area shape="rect" id="node3" href="$group__l4vbus__module.html#gaefeb0d86979de1ef1aa53951cc3764fd" title="Get capability of ICU." alt="" coords="184,56,341,83"/>
+</map>

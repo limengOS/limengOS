@@ -1,0 +1,4 @@
+<map id="L4::Ipc::Ostream::put" name="L4::Ipc::Ostream::put">
+<area shape="rect" id="node1" title="Put an array with size elements of type T into the stream." alt="" coords="152,5,309,32"/>
+<area shape="rect" id="node2" href="$ipc__stream.html#aabb21a8717620197539698c340d2b977" title="Insert an element to type T into the stream s." alt="" coords="5,5,104,32"/>
+</map>

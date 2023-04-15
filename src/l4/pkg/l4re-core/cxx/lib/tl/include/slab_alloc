@@ -1,0 +1,496 @@
+// vi:set ft=cpp: -*- Mode: C++ -*-
+/*
+ * (c) 2008-2009 Alexander Warg <warg@os.inf.tu-dresden.de>,
+ *               Alexander Warg <warg@os.inf.tu-dresden.de>
+ *     economic rights: Technische Universität Dresden (Germany)
+ *
+ * This file is part of TUD:OS and distributed under the terms of the
+ * GNU General Public License 2.
+ * Please see the COPYING-GPL-2 file for details.
+ *
+ * As a special exception, you may use this file as part of a free software
+ * library without restriction.  Specifically, if other files instantiate
+ * templates or use macros or inline functions from this file, or you compile
+ * this file and link it with other files to produce an executable, this
+ * file does not by itself cause the resulting executable to be covered by
+ * the GNU General Public License.  This exception does not however
+ * invalidate any other reasons why the executable file might be covered by
+ * the GNU General Public License.
+ */
+
+#pragma once
+
+#include <l4/cxx/std_alloc>
+#include <l4/cxx/hlist>
+#include <l4/sys/consts.h>
+
+namespace cxx {
+
+/**
+ * \ingroup cxx_api
+ * Basic slab allocator.
+ *
+ * \tparam Obj_size  The size of the objects managed by the allocator (in bytes).
+ * \tparam Slab_size The size of a slab (in bytes).
+ * \tparam Max_free  The maximum number of free slabs. When this limit is reached
+ *                   slabs are freed, provided that the backend allocator
+ *                   supports allocated memory to be freed.
+ * \tparam Alloc     The backend allocator used to allocate slabs.
+ */
+template< int Obj_size, int Slab_size = L4_PAGESIZE,
+  int Max_free = 2, template<typename A> class Alloc = New_allocator >
+class Base_slab
+{
+private:
+  struct Free_o
+  {
+    Free_o *next;
+  };
+
+protected:
+  struct Slab_i;
+
+private:
+  struct Slab_head : public H_list_item
+  {
+    /// Number of free objects in the slab.
+    unsigned num_free;
+    /// Pointer to the first free object in the slab.
+    Free_o *free;
+    /// Pointer to the slab cache (instance of the slab allocator).
+    Base_slab<Obj_size, Slab_size, Max_free, Alloc> *cache;
+
+    inline Slab_head() throw() : num_free(0), free(0), cache(0) 
+    {}
+  };
+
+  // In an empty or partially filled slab, each free object stores a pointer to
+  // the next free object. Thus, the size of an object needs to be at least the
+  // size of a pointer.
+  static_assert(Obj_size >= sizeof(void *),
+                "Object size must be at least the size of a pointer.");
+  static_assert(Obj_size <= Slab_size - sizeof(Slab_head),
+                "Object_size exceeds slab capability.");
+
+public:
+  enum
+  {
+    /// Size of an object.
+    object_size      = Obj_size,
+    /// Size of a slab.
+    slab_size        = Slab_size,
+    /// Objects per slab.
+    objects_per_slab = (Slab_size - sizeof(Slab_head)) / object_size,
+    /// Maximum number of free slabs.
+    max_free_slabs   = Max_free,
+  };
+
+protected:
+  struct Slab_store
+  {
+    char _o[slab_size - sizeof(Slab_head)]; 
+    Free_o *object(unsigned obj) throw()
+    { return reinterpret_cast<Free_o*>(_o + object_size * obj); }
+  };
+
+  /// Type of a slab
+  struct Slab_i : public Slab_store, public Slab_head
+  {};
+
+public:
+  /// Type of the backend allocator.
+  typedef Alloc<Slab_i> Slab_alloc;
+
+  typedef void Obj_type;
+
+private:
+  /// Allocator used for slabs.
+  Slab_alloc _alloc;
+  /// Number of empty slabs.
+  unsigned _num_free;
+  /// Total number of slabs.
+  unsigned _num_slabs;
+  /// List of full slabs.
+  H_list<Slab_i> _full_slabs;
+  /// List of partial slabs.
+  H_list<Slab_i> _partial_slabs;
+  /// List of empty slabs.
+  H_list<Slab_i> _empty_slabs;
+
+  /// Add a new slab.
+  void add_slab(Slab_i *s) throw()
+  {
+    s->num_free = objects_per_slab;
+    s->cache = this;
+
+    //L4::cerr << "Slab: " << this << "->add_slab(" << s << ", size=" 
+    //  << slab_size << "):" << " f=" << s->object(0) << '\n';
+
+    // initialize free list
+    Free_o *f = s->free = s->object(0);
+    for (unsigned i = 1; i < objects_per_slab; ++i)
+      {
+	f->next = s->object(i);
+	f = f->next;
+      }
+    f->next = 0;
+
+    // insert slab into cache's list
+    _empty_slabs.push_front(s);
+    ++_num_slabs;
+    ++_num_free;
+  }
+
+  /// Grow the slab cache, by adding a new slab.
+  bool grow() throw()
+  {
+    Slab_i *s = _alloc.alloc();
+    if (!s)
+      return false;
+
+    new (s, cxx::Nothrow()) Slab_i();
+
+    add_slab(s);
+    return true;
+  }
+
+  /**
+   * Shrink the slab cache by freeing empty slabs.
+   *
+   * The flow of memory from the slab cache back to the system is regulated via
+   * the backend allocator's flag `can_free`. If this flag is set to true, the
+   * slab cache retains at maximum Max_free empty slabs; empty slabs exceeding
+   * this limit are freed. If `can_free` is set to false, the shrink operation
+   * does nothing.
+   */
+  void shrink() throw()
+  {
+    if (!_alloc.can_free)
+      return;
+
+    while (!_empty_slabs.empty() && _num_free > max_free_slabs)
+      {
+	Slab_i *s = _empty_slabs.front();
+	_empty_slabs.remove(s);
+	--_num_free;
+	--_num_slabs;
+	_alloc.free(s);
+      }
+  }
+
+public:
+  Base_slab(Slab_alloc const &alloc = Slab_alloc()) throw()
+    : _alloc(alloc), _num_free(0), _num_slabs(0), _full_slabs(),
+      _partial_slabs(), _empty_slabs()
+  {}
+
+  ~Base_slab() throw()
+  {
+    while (!_empty_slabs.empty())
+      {
+	Slab_i *o = _empty_slabs.front();
+	_empty_slabs.remove(o);
+	_alloc.free(o);
+      }
+    while (!_partial_slabs.empty())
+      {
+	Slab_i *o = _partial_slabs.front();
+	_partial_slabs.remove(o);
+	_alloc.free(o);
+      }
+    while (!_full_slabs.empty())
+      {
+	Slab_i *o = _full_slabs.front();
+	_full_slabs.remove(o);
+	_alloc.free(o);
+      }
+  }
+
+  /**
+   * Allocate a new object.
+   *
+   * \return A pointer to the new object if the allocation succeeds, or 0 on
+   *         failure to acquire memory from the backend allocator when the slab
+   *         cache memory is already exhausted.
+   *
+   * \note The user is responsible for initializing the object.
+   */
+  void *alloc() throw()
+  {
+    H_list<Slab_i> *free = &_partial_slabs;
+    if (free->empty())
+      free = &_empty_slabs;
+
+    if (free->empty() && !grow())
+      return 0;
+
+    Slab_i *s = free->front();
+    Free_o *o = s->free;
+    s->free = o->next;
+
+    if (free == &_empty_slabs)
+      {
+	_empty_slabs.remove(s);
+        --_num_free;
+      }
+
+    --(s->num_free);
+
+    if (!s->free)
+      {
+	_partial_slabs.remove(s);
+        _full_slabs.push_front(s);
+      }
+    else if (free == &_empty_slabs)
+      _partial_slabs.push_front(s);
+
+    //L4::cerr << this << "->alloc(): " << o << ", of " << s << '\n';
+
+    return o;
+  }
+
+  /**
+   * Free the given object (`_o`).
+   *
+   * \pre The object must have been allocated with this allocator.
+   */
+  void free(void *_o) throw()
+  {
+    if (!_o)
+      return;
+
+    unsigned long addr = (unsigned long)_o;
+
+    // find out the slab the object is in
+    addr = (addr / slab_size) * slab_size;
+    Slab_i *s = (Slab_i*)addr;
+
+    if (s->cache != this)
+      return;
+
+    Free_o *o = reinterpret_cast<Free_o*>(_o);
+
+    o->next = s->free;
+    s->free = o;
+
+    bool was_full = false;
+
+    if (!s->num_free)
+      {
+	_full_slabs.remove(s);
+	was_full = true;
+      }
+
+    ++(s->num_free);
+
+    if (s->num_free == objects_per_slab)
+      {
+	if (!was_full)
+	  _partial_slabs.remove(s);
+
+	_empty_slabs.push_front(s);
+	++_num_free;
+	if (_num_free > max_free_slabs)
+	  shrink();
+
+	was_full = false;
+      }
+    else if (was_full)
+      _partial_slabs.push_front(s);
+
+    //L4::cerr << this << "->free(" << _o << "): of " << s << '\n';
+  }
+
+  /**
+   * Get the total number of objects managed by the slab allocator.
+   *
+   * \return The number of objects managed by the allocator (including the
+   *         free objects).
+   */
+  unsigned total_objects() const throw()
+  { return _num_slabs * objects_per_slab; }
+
+  /**
+   * Get the number of objects which can be allocated before a new empty slab
+   * needs to be added to the slab allocator.
+   *
+   * \return The number of free objects in the slab allocator.
+   */
+  unsigned free_objects() const throw()
+  {
+    unsigned count = 0;
+
+    /* count partial slabs first */
+    for (typename H_list<Slab_i>::Const_iterator s = _partial_slabs.begin();
+         s != _partial_slabs.end(); ++s)
+      count += s->num_free;
+
+    /* add empty slabs */
+    count += _num_free * objects_per_slab;
+
+    return count;
+  }
+};
+
+/**
+ * \ingroup cxx_api
+ * Slab allocator for object of type `Type`.
+ *
+ * \tparam Type       The type of the objects to manage.
+ * \tparam Slab_size  Size of a slab.
+ * \tparam Max_free   The maximum number of free slabs.
+ * \tparam Alloc      The allocator for the slabs.
+ */
+template<typename Type, int Slab_size = L4_PAGESIZE,
+  int Max_free = 2, template<typename A> class Alloc = New_allocator > 
+class Slab : public Base_slab<sizeof(Type), Slab_size, Max_free, Alloc>
+{
+private:
+  typedef Base_slab<sizeof(Type), Slab_size, Max_free, Alloc> Base_type;
+public:
+
+  typedef Type Obj_type;
+
+  Slab(typename Base_type::Slab_alloc const &alloc 
+      = typename Base_type::Slab_alloc()) throw()
+    : Base_slab<sizeof(Type), Slab_size, Max_free, Alloc>(alloc) {}
+
+
+  /**
+   * Allocate an object of type `Type`.
+   *
+   * \return A pointer to the object just allocated, or 0 on failure.
+   *
+   * \note The user is responsible for initializing the object.
+   */
+  Type *alloc() throw()
+  {
+    return reinterpret_cast<Type *>(Base_type::alloc());
+  }
+
+  /**
+   * Free the object addressed by `o`.
+   *
+   * \param o The pointer to the object to free.
+   * \pre The object must have been allocated with this allocator.
+   */
+  void free(Type *o) throw()
+  { Base_slab<sizeof(Type), Slab_size, Max_free, Alloc>::free(o); }
+};
+
+
+/**
+ * \ingroup cxx_api
+ * Merged slab allocator (allocators for objects of the same size are merged
+ * together).
+ *
+ * \tparam Obj_size   The size of an object managed by the slab allocator.
+ * \tparam Slab_size  The size of a slab.
+ * \tparam Max_free   The maximum number of free slabs.
+ * \tparam Alloc      The allocator for the slabs.
+ *
+ * This slab allocator class is useful for merging slab allocators with the
+ * same parameters (equal `Obj_size`, `Slab_size`, `Max_free`, and
+ * `Alloc` parameters) together and share the overhead for the slab caches
+ * among all equal-sized objects.
+ */
+template< int Obj_size, int Slab_size = L4_PAGESIZE,
+  int Max_free = 2, template<typename A> class Alloc = New_allocator >
+class Base_slab_static
+{
+private:
+  typedef Base_slab<Obj_size, Slab_size, Max_free, Alloc> _A;
+  static _A _a;
+public:
+  typedef void Obj_type;
+  enum
+  {
+    /// Size of an object.
+    object_size      = Obj_size,
+    /// Size of a slab.
+    slab_size        = Slab_size,
+    /// Number of objects per slab.
+    objects_per_slab = _A::objects_per_slab,
+    /// Maximum number of free slabs.
+    max_free_slabs   = Max_free,
+  };
+
+  /**
+   * Allocate an object.
+   *
+   * \note The user is responsible for initializing the object.
+   */
+  void *alloc() throw() { return _a.alloc(); }
+
+  /**
+   * Free the given object (`p`).
+   *
+   * \param p  The pointer to the object to free.
+   * \pre `p` must be a pointer to an object allocated by this allocator.
+   */
+  void free(void *p) throw() { _a.free(p); }
+
+  /**
+   * Get the total number of objects managed by the slab allocator.
+   *
+   * \return The number of objects managed by the allocator (including the
+   *         free objects).
+   * \note The value is the merged value for all equal parameterized
+   *       Base_slab_static instances.
+   */
+  unsigned total_objects() const throw() { return _a.total_objects(); }
+
+  /**
+   * Get the number of free objects in the slab allocator.
+   *
+   * \return The number of free objects in all free and partially used
+   *         slabs managed by this allocator.
+   * \note The value is the merged value for all equal parameterized
+   *       Base_slab_static instances.
+   */
+  unsigned free_objects() const throw() { return _a.free_objects(); }
+};
+
+
+template< int _O, int _S, int _M, template<typename A> class Alloc >
+typename Base_slab_static<_O,_S,_M,Alloc>::_A 
+  Base_slab_static<_O,_S,_M,Alloc>::_a; 
+
+/**
+ * \ingroup cxx_api
+ * Merged slab allocator (allocators for objects of the same size are merged
+ * together).
+ *
+ * \tparam Type       The type of the objects to manage.
+ * \tparam Slab_size  The size of a slab.
+ * \tparam Max_free   The maximum number of free slabs.
+ * \tparam Alloc      The allocator for the slabs.
+ *
+ * This slab allocator class is useful for merging slab allocators with the
+ * same parameters (equal `sizeof(Type)`, `Slab_size`, `Max_free`, and
+ * `Alloc` parameters) together and share the overhead for the slab caches
+ * among all equal-sized objects.
+ */
+template<typename Type, int Slab_size = L4_PAGESIZE,
+  int Max_free = 2, template<typename A> class Alloc = New_allocator > 
+class Slab_static 
+: public Base_slab_static<sizeof(Type), Slab_size, Max_free, Alloc>
+{
+public:
+
+  typedef Type Obj_type;
+  /**
+   * Allocate an object of type `Type`.
+   *
+   * \return A pointer to the just allocated object, or 0 on failure.
+   *
+   * \note The object is not zeroed out by the slab allocator.
+   */
+  Type *alloc() throw()
+  {
+    return reinterpret_cast<Type *>(
+      Base_slab_static<sizeof(Type), Slab_size, Max_free, Alloc>::alloc());
+  }
+};
+
+}

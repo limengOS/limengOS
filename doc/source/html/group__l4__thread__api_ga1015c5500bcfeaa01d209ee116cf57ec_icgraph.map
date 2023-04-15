@@ -1,0 +1,5 @@
+<map id="l4_thread_vcpu_control_ext_u" name="l4_thread_vcpu_control_ext_u">
+<area shape="rect" id="node1" title="Enable the extended vCPU feature for the thread." alt="" coords="263,23,436,65"/>
+<area shape="rect" id="node2" href="$group__l4__thread__api.html#ga592d99fe80a0091a837f6001d0d5c25b" title="Enable the extended vCPU feature for the thread." alt="" coords="9,5,211,32"/>
+<area shape="rect" id="node3" href="$classL4_1_1Thread.html#ac341b827b00c21bc3753c30163e0f173" title="Enable the extended vCPU feature for the thread." alt="" coords="5,56,215,83"/>
+</map>

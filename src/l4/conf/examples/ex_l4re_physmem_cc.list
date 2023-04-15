@@ -1,0 +1,13 @@
+#,  , , modified
+#modaddr 0x00115000
+#modaddr 0xa000000
+modaddr 0x00100000
+
+entry ex_l4re_physmem_cc
+roottask moe --init=rom/ex_l4re_physmem_cc
+#roottask moe rom/hello.cfg
+module l4re
+module ned
+module ex_l4re_physmem_cc.cfg
+module ex_l4re_physmem_cc
+

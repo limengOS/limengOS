@@ -1,0 +1,10 @@
+<map id="L4::Rcv_endpoint" name="L4::Rcv_endpoint">
+<area shape="rect" id="node1" title="Interface for kernel objects that allow to receive IPC from them." alt="" coords="154,389,287,467"/>
+<area shape="rect" id="node5" href="$classL4_1_1Kobject__2t.html" title=" " alt="" coords="5,516,212,681"/>
+<area shape="rect" id="node7" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="237,531,431,667"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="123,204,318,340"/>
+<area shape="rect" id="node3" href="$classL4_1_1Kobject.html" title="Base class for all kinds of kernel objects and remote objects, referenced by capabilities." alt="" coords="71,13,186,105"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="210,5,418,112"/>
+<area shape="rect" id="node6" href="$classL4_1_1Irq.html" title="C++ Irq interface, see IRQs for the C interface." alt="" coords="59,731,158,852"/>
+<area shape="rect" id="node8" href="$classL4_1_1Ipc__gate.html" title="The C++ IPC gate interface, see IPC&#45;Gate API for the C interface." alt="" coords="281,753,387,830"/>
+</map>

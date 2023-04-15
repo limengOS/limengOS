@@ -1,0 +1,13 @@
+<map id="l4/re/c/dataspace.h" name="l4/re/c/dataspace.h">
+<area shape="rect" id="node1" title="Data space C interface." alt="" coords="471,5,617,32"/>
+<area shape="rect" id="node2" href="$dma__space_8h.html" title="DMA space C interface." alt="" coords="5,80,157,107"/>
+<area shape="rect" id="node3" href="$c_2event_8h.html" title="Event C interface." alt="" coords="181,80,296,107"/>
+<area shape="rect" id="node5" href="$mem__alloc_8h.html" title="Memory allocator C interface." alt="" coords="321,80,471,107"/>
+<area shape="rect" id="node6" href="$rm_8h.html" title="Region map interface, C interface." alt="" coords="496,80,592,107"/>
+<area shape="rect" id="node7" href="$goos__fb_8h.html" title="Framebuffer utility functionality." alt="" coords="622,229,749,271"/>
+<area shape="rect" id="node8" href="$goos_8h.html" title=" " alt="" coords="667,155,816,181"/>
+<area shape="rect" id="node9" href="$view_8h.html" title=" " alt="" coords="803,80,951,107"/>
+<area shape="rect" id="node4" href="$event__buffer_8h_source.html" title=" " alt="" coords="159,155,318,181"/>
+<area shape="rect" id="node10" href="$bitmap_8h.html" title="Bitmap renderer header file." alt="" coords="841,155,1023,181"/>
+<area shape="rect" id="node11" href="$font_8h.html" title="Bitmap font renderer header file." alt="" coords="915,237,1077,263"/>
+</map>

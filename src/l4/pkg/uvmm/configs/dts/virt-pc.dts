@@ -1,0 +1,206 @@
+/*
+ * Device tree for a virtual machine without any hardware pass-through.
+ *
+ * Information sources:
+ *  https://github.com/devicetree-org/devicetree-specification/releases/tag/v0.3
+ *  For PCI reg cell encoding:
+ *    [1] https://www.devicetree.org/open-firmware/bindings/pci/pci2_1.pdf
+ *  For (E)ISA reg cell encoding:
+ *    [2] https://www.devicetree.org/open-firmware/bindings/isa/isa0_4d.ps
+ */
+
+/dts-v1/;
+
+/include/ "skeleton64.dtsi"
+
+/ {
+        model = "L4 VM";
+        compatible = "l4,virt", "linux,dummy-virt";
+
+        memory@0 {
+            device_type = "memory";
+            reg = <0x0 0x00000000 0x0 0x80000000
+                   0x1 0x00000000 0xffffffff 0x0>;
+            l4vmm,dscap = "ram";
+        };
+
+        IOAPIC: ioapic {
+            compatible = "intel,ioapic";
+            interrupt-controller;
+            #address-cells = <0>;
+            #interrupt-cells = <1>;
+        };
+
+        msi_ctrl: msictrl {
+            compatible = "intel,msi-controller";
+            msi-controller;
+            #msi-cells = <0>;
+        };
+
+        cpus {
+          #address-cells = <1>;
+          #size-cells = <0>;
+
+            cpu0: cpu@0 {
+                device_type = "cpu";
+                compatible = "virt-intel";
+                reg = <0>;
+
+                #address-cells = <2>;
+                #size-cells = <2>;
+            };
+
+            cpu1: cpu@1 {
+                device_type = "cpu";
+                compatible = "virt-intel";
+                reg = <1>;
+
+                #address-cells = <2>;
+                #size-cells = <2>;
+            };
+        };
+
+        PIC: pic {
+          compatible = "virt-i8259-pic";
+          reg = <0x0 0x0 0x0 0x0>;
+          msi-parent = <&msi_ctrl>;
+          interrupt-controller;
+          #address-cells = <0>;
+          #interrupt-cells = <1>;
+        };
+
+        pit {
+          compatible = "virt-pit";
+          reg = <0x0 0x0 0x0 0x0>;
+          interrupt-parent = <&PIC>;
+          interrupts = <0>;
+        };
+
+        acpi_platform {
+          compatible = "virt-acpi";
+          interrupt-parent = <&PIC>;
+          interrupts = <9>;
+        };
+
+        acpi_timer {
+           compatible = "acpi-timer";
+        };
+
+        rtc {
+            compatible = "virt-rtc";
+            reg = <0x0 0x0 0x0 0x0>;
+        };
+
+        uart8250 {
+          compatible = "ns8250", "uart,8250";
+          reg = <0x0 0x0 0x0 0x0>;
+          interrupt-parent = <&PIC>;
+          interrupts = <4>;
+          l4vmm,vcon_cap = "uart";
+        };
+
+        l4rtc {
+            compatible = "l4rtc";
+            l4vmm,rtccap = "rtc";
+        };
+
+        kvm_clock {
+            compatible = "kvm-clock";
+            reg = <0x0 0x0 0x0 0x0>;
+        };
+
+        isa {
+            device_type = "eisa";
+            #address-cells = <2>;
+            #size-cells = <1>;
+            // The first cell of a child nodes reg property encodes the
+            // following information. See the ISA bus device-tree binding [2]
+            // for more details:
+            //
+            //  [2] 11-bit aliased (IOPORT only)
+            //  [1] 10-bit aliased (IOPORT only)
+            //  [0] 0=MMIO32, 1=IOPORT
+            //
+            // The standard ranges property defines the translation of child
+            // reg address entries into the parent address space. Effectively
+            // removes the upper word. For the purpose of the ISA translation,
+            // only bit [0] is considered of the first word.
+            ranges = <0x0 0x0 0x0 0x0 0xffffffff
+                      0x1 0x0 0x0 0x0     0x1000>;
+
+            // example {
+            //    reg = < 0x0 0xA0000 0x20000     // MMIO [0xA0000-0xBFFFF]
+            //            0x1   0x3C0    0x20 >   // IO   [0x3C0-0x3DF]
+            // }
+
+            isa_debugport {
+                compatible = "l4vmm,isa-debugport";
+                reg = <0x1 0x402 0x1>;
+                l4vmm,vcon_cap = "debug";
+            };
+        };
+
+        pci0: pci@aa000000 {
+            compatible = "virt-pci-bridge";
+            device_type = "pci";
+            interrupt-parent = <&IOAPIC>;
+            msi-parent = <&msi_ctrl>;
+            bus-range = <0x0 0xff>;
+            #address-cells = <3>;
+            #size-cells = <2>;
+            #interrupt-cells = <1>;
+
+            // The first cell encodes the following information. See the PCI
+            // bus device-tree binding [1] for more details:
+            //
+            //  [31]    non-relocatable
+            //  [30]    prefetchable
+            //  [29]    aliased
+            //  [25:24] 0=CFGSPACE, 1=IOPORT, 2=MMIO32, 3=MMIO64
+            //  [23:16] bus
+            //  [15:11] device
+            //  [10:8]  function
+            //  [7:0]   register (used to indicate BAR register, e.g. 0x10)
+            //
+            // The standard ranges property defines the translation of child
+            // reg address entries into the parent address space. Effectively
+            // removes the upper word. For the purpose of the PCI translation,
+            // only bits [25:24] are considered of the first word.
+            //
+            // Attention: the ranges property is parsed by uvmm and by the
+            // firmware to detect the bridge windows!
+            ranges = <0x01000000 0x0 0x00006000 0x0 0x00006000 0x0    0xa000
+                      0x02000000 0x0 0xaa000000 0x0 0xaa000000 0x0 0x1000000>;
+
+            // Every virtual device needs a cfgspace address as first reg
+            // entry. Currently uvmm will ignore the bus/device/function
+            // address, though.
+
+            virtio_uart@0 {
+              compatible = "virtio,pci";
+              // The register property is required to be structured as follows:
+              //    reg 0: CFGSPACE address
+              //    reg 1: BAR[0] MMIO memory region for the MSIX table: 2 pages.
+              //    reg 2: BAR[1] IO port range for the device configuration.
+              // The address of all entries should be 0 because it's defined as
+              // *offset* from the associated BAR register.
+              reg = <0x00000000 0x0 0x0 0x0 0x0000
+                     0x02000010 0x0 0x0 0x0 0x2000
+                     0x01000014 0x0 0x0 0x0   0x80>;
+              msi-parent = <&msi_ctrl>;
+              l4vmm,vdev = "console";
+            };
+
+            virtio_net@1 {
+                compatible = "virtio,pci";
+                // The reg property requirements are described in virtio_uart.
+                reg = <0x00000800 0x0 0x0 0x0 0x0000
+                       0x02000810 0x0 0x0 0x0 0x2000
+                       0x01000814 0x0 0x0 0x0 0x80>;
+                msi-parent = <&msi_ctrl>;
+                l4vmm,virtiocap = "net";
+                l4vmm,vdev = "proxy";
+            };
+        };
+
+};

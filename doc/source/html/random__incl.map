@@ -1,0 +1,33 @@
+<map id="l4/re/random" name="l4/re/random">
+<area shape="rect" id="node1" title="Random number generator interface definition." alt="" coords="123,5,229,32"/>
+<area shape="rect" id="node2" href="$capability.html" title="L4::Cap related definitions." alt="" coords="445,304,573,331"/>
+<area shape="rect" id="node22" href="$ipc__iface.html" title="Interface Definition Language." alt="" coords="72,453,179,480"/>
+<area shape="rect" id="node23" href="$ipc__types.html" title=" " alt="" coords="30,603,183,629"/>
+<area shape="rect" id="node26" href="$icu.html" title="Interrupt controller." alt="" coords="360,80,443,107"/>
+<area shape="rect" id="node3" href="$l4_2sys_2consts_8h.html" title="Common constants." alt="" coords="398,1065,517,1092"/>
+<area shape="rect" id="node7" href="$l4_2sys_2types_8h.html" title="Common L4 ABI Data Types." alt="" coords="627,991,739,1017"/>
+<area shape="rect" id="node10" href="$kobject_source.html" title=" " alt="" coords="573,528,683,555"/>
+<area shape="rect" id="node20" href="$l4_2sys_2task_8h.html" title="Common task related definitions." alt="" coords="741,759,845,786"/>
+<area shape="rect" id="node21" href="$sys_2meta.html" title="Meta interface for getting dynamic type information about objects behind capabilities." alt="" coords="325,379,424,405"/>
+<area shape="rect" id="node4" href="$compiler_8h.html" title="L4 compiler related defines." alt="" coords="439,1140,571,1167"/>
+<area shape="rect" id="node6" href="$l4_2sys_2l4int_8h.html" title="Fixed sized integer types, generic version." alt="" coords="827,1140,933,1167"/>
+<area shape="rect" id="node5" title=" " alt="" coords="444,1215,567,1241"/>
+<area shape="rect" id="node8" href="$____l4__fpage_8h_source.html" title=" " alt="" coords="592,1065,739,1092"/>
+<area shape="rect" id="node9" href="$____timeout_8h_source.html" title=" " alt="" coords="864,1065,1005,1092"/>
+<area shape="rect" id="node11" href="$kernel__object_8h.html" title="Kernel object system calls." alt="" coords="1002,677,1123,704"/>
+<area shape="rect" id="node16" href="$____typeinfo_8h.html" title="Type information handling." alt="" coords="361,603,463,629"/>
+<area shape="rect" id="node12" href="$l4_2sys_2utcb_8h.html" title="UTCB definitions." alt="" coords="872,916,976,943"/>
+<area shape="rect" id="node13" href="$____kernel__object__impl_8h.html" title="Low&#45;level kernel debugger functions." alt="" coords="920,752,1085,793"/>
+<area shape="rect" id="node14" href="$l4_2sys_2ipc_8h.html" title="Common IPC interface." alt="" coords="877,841,971,868"/>
+<area shape="rect" id="node15" href="$err_8h.html" title="Error codes." alt="" coords="177,916,271,943"/>
+<area shape="rect" id="node17" href="$types.html" title=" " alt="" coords="69,759,155,786"/>
+<area shape="rect" id="node18" href="$ipc__basics_source.html" title=" " alt="" coords="150,677,266,704"/>
+<area shape="rect" id="node19" href="$capability_8h_source.html" title=" " alt="" coords="341,677,464,704"/>
+<area shape="rect" id="node24" href="$ipc__string_source.html" title=" " alt="" coords="277,453,389,480"/>
+<area shape="rect" id="node25" href="$ipc__array_source.html" title=" " alt="" coords="195,528,277,555"/>
+<area shape="rect" id="node27" href="$irq.html" title="C++ Irq interface." alt="" coords="413,155,494,181"/>
+<area shape="rect" id="node28" href="$icu_8h.html" title="Interrupt controller." alt="" coords="843,603,938,629"/>
+<area shape="rect" id="node29" href="$l4_2sys_2irq_8h.html" title="C Irq interface." alt="" coords="1140,603,1233,629"/>
+<area shape="rect" id="node31" href="$rcv__endpoint.html" title="The C++ Receive endpoint interface." alt="" coords="491,229,639,256"/>
+<area shape="rect" id="node30" href="$rcv__endpoint_8h.html" title="Receive endpoint C interface." alt="" coords="1312,759,1472,786"/>
+</map>

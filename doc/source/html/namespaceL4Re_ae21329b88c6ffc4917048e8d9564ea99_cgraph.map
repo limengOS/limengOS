@@ -1,0 +1,6 @@
+<map id="L4Re::chkipc" name="L4Re::chkipc">
+<area shape="rect" id="node1" title="Test a message tag for IPC errors." alt="" coords="5,31,109,57"/>
+<area shape="rect" id="node2" href="$namespaceL4Re.html#a3f17984019f06676a7e3eecb41bbb0bb" title="Generate C++ exception on error." alt="" coords="189,5,296,32"/>
+<area shape="rect" id="node4" href="$structl4__msgtag__t.html#a09c8212b870e6c144fd072dbde5b5262" title="Test if flags indicate an error." alt="" coords="157,56,328,83"/>
+<area shape="rect" id="node3" href="$namespaceL4Re.html#ae27ac6f274f4ad1267d0d1c0c033c00b" title="Generate C++ exception." alt="" coords="376,5,513,32"/>
+</map>

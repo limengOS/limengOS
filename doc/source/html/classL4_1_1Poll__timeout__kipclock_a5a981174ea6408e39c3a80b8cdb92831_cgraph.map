@@ -1,0 +1,5 @@
+<map id="L4::Poll_timeout_kipclock::set" name="L4::Poll_timeout_kipclock::set">
+<area shape="rect" id="node1" title="(Re&#45;)Set relative timeout in microseconds" alt="" coords="5,31,221,57"/>
+<area shape="rect" id="node2" href="$group__l4__kip__api.html#ga833b0dd3ac6cf62453707f89d695a96f" title="Return clock value from the KIP." alt="" coords="269,5,372,32"/>
+<area shape="rect" id="node3" href="$group__api__l4re__env.html#gae222fd7f694a90a34b8bde0edd265f4b" title="Get Kernel Info Page." alt="" coords="283,56,358,83"/>
+</map>

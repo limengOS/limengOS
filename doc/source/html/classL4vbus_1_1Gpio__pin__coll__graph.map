@@ -1,0 +1,9 @@
+<map id="L4vbus::Gpio_pin" name="L4vbus::Gpio_pin">
+<area shape="rect" id="node1" title="A GPIO pin." alt="" coords="126,1111,259,1320"/>
+<area shape="rect" id="node2" href="$classL4vbus_1_1Device.html" title="Device on a L4vbus::Vbus." alt="" coords="123,837,263,1061"/>
+<area shape="rect" id="node3" href="$classL4vbus_1_1Pm.html" title=" " alt="" coords="5,639,177,731"/>
+<area shape="rect" id="node4" href="$classL4vbus_1_1Pm.html" title="Power&#45;management API mixin." alt="" coords="14,396,169,488"/>
+<area shape="rect" id="node5" href="$classL4_1_1Cap.html" title=" " alt="" coords="202,595,389,775"/>
+<area shape="rect" id="node6" href="$classL4_1_1Cap__base.html" title="Base class for all kinds of capabilities." alt="" coords="159,5,397,303"/>
+<area shape="rect" id="node7" href="$classL4_1_1Cap.html" title="C++ interface for capabilities." alt="" coords="300,352,419,532"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="cxx::Avl_map&lt; KEY_TYPE, DATA_TYPE, COMPARE, ALLOC &gt;" name="cxx::Avl_map&lt; KEY_TYPE, DATA_TYPE, COMPARE, ALLOC &gt;">
+<area shape="rect" id="node1" title="AVL tree based associative container." alt="" coords="5,727,241,863"/>
+<area shape="rect" id="node4" href="$classcxx_1_1Avl__map.html" title=" " alt="" coords="37,940,210,1091"/>
+<area shape="rect" id="node2" href="$classcxx_1_1Bits_1_1Base__avl__set.html" title=" " alt="" coords="13,380,234,677"/>
+<area shape="rect" id="node3" href="$classcxx_1_1Bits_1_1Base__avl__set.html" title="Internal: AVL set with internally managed nodes." alt="" coords="18,5,229,259"/>
+</map>

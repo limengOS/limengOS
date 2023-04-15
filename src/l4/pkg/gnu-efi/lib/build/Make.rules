@@ -1,0 +1,57 @@
+# vim:set ft=make:
+PKGDIR  ?= ../..
+L4DIR   ?= $(PKGDIR)/../..
+
+EFI_ARCH-x86    = ia32
+EFI_ARCH-amd64  = x86_64
+EFI_ARCH-arm64  = aarch64
+EFI_ARCH        = $(EFI_ARCH-$(ARCH))
+EFILDSCRIPT     = elf_$(EFI_ARCH)_efi.lds
+
+TARGET          = libgnuefi.a libefi.a libgnuefi-crt0.a
+INSTALL_TARGET  = libgnuefi.a libefi.a crt0-gnuefi.o $(EFILDSCRIPT)
+
+PRIVATE_INCDIR  = $(SRC_DIR)
+CONTRIB_INCDIR  = gnu-efi gnu-efi/$(EFI_ARCH)
+CFLAGS          = -fpic -fshort-wchar -fno-strict-aliasing \
+                  -ffreestanding -fno-stack-protector -fno-stack-check \
+                  -fno-stack-check \
+                  -fno-merge-all-constants -Wno-error=pragmas
+CFLAGS-amd64    = -DGNU_EFI_USE_MS_ABI -maccumulate-outgoing-args --std=c11 \
+                  -mno-avx
+DEFINES         = -DCONFIG_$(EFI_ARCH) -DL4
+PC_LIBS         = -lgnuefi -lefi
+PC_EXTRA        = Link_Start= %:search(crt0-gnuefi.o %(libdir))
+
+vpath %.c $(SRC_DIR)/../contrib
+vpath %.S $(SRC_DIR)/../contrib
+
+SRC_C_libgnuefi.a      = gnuefi/reloc_$(EFI_ARCH).c
+SRC_S_libgnuefi-crt0.a = gnuefi/crt0-efi-$(EFI_ARCH).o
+OBJS           += gnuefi/crt0-efi-$(EFI_ARCH).o
+
+FILES_C = boxdraw smbios console crc data debug dpath \
+          error event exit guid hand hw init lock  \
+          misc pause print sread str cmdline \
+          runtime/rtlock runtime/efirtlib runtime/rtstr runtime/vm runtime/rtdata \
+          $(EFI_ARCH)/initplat $(EFI_ARCH)/math
+FILES_S = $(EFI_ARCH)/setjmp
+
+FILES_S-x86   = $(EFI_ARCH)/efi_stub
+FILES_C-amd64 = $(EFI_ARCH)/callwrap
+FILES_S-amd64 = $(EFI_ARCH)/efi_stub
+FILES_S-arm   = $(EFI_ARCH)/uldiv $(EFI_ARCH)/ldivmod $(EFI_ARCH)/div $(EFI_ARCH)/llsl $(EFI_ARCH)/llsr \
+                $(EFI_ARCH)/mullu
+
+SRC_S_libefi.a += $(addprefix lib/,$(addsuffix .S,$(FILES_S) $(FILES_S-$(ARCH))))
+SRC_C_libefi.a += $(addprefix lib/,$(addsuffix .c,$(FILES_C) $(FILES_C-$(ARCH))))
+
+include $(L4DIR)/mk/lib.mk
+
+$(EFILDSCRIPT):
+	$(VERBOSE)$(LN) -sf $(SRC_DIR)/../contrib/gnuefi/$(EFILDSCRIPT)
+
+crt0-gnuefi.o: gnuefi/crt0-efi-$(EFI_ARCH).o
+	$(VERBOSE)$(LN) -sf $< $@
+
+WARNINGS := $(WARNINGS_MINIMAL)

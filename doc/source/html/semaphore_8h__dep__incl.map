@@ -1,0 +1,8 @@
+<map id="l4/sys/semaphore.h" name="l4/sys/semaphore.h">
+<area shape="rect" id="node1" title="C semaphore interface." alt="" coords="75,5,225,32"/>
+<area shape="rect" id="node2" href="$semaphore.html" title="Semaphore class definition." alt="" coords="81,80,219,107"/>
+<area shape="rect" id="node3" href="$client_2virtio-block_source.html" title=" " alt="" coords="5,155,129,196"/>
+<area shape="rect" id="node4" href="$vcon__stream_8h_source.html" title=" " alt="" coords="153,155,312,196"/>
+<area shape="rect" id="node5" href="$vcon__stream__impl_8h_source.html" title=" " alt="" coords="64,244,223,285"/>
+<area shape="rect" id="node6" href="$vfs__impl_8h_source.html" title=" " alt="" coords="247,244,394,285"/>
+</map>

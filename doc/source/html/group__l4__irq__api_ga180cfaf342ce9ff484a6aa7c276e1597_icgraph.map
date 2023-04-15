@@ -1,0 +1,7 @@
+<map id="l4_irq_trigger_u" name="l4_irq_trigger_u">
+<area shape="rect" id="node1" title="Trigger the object." alt="" coords="412,31,535,57"/>
+<area shape="rect" id="node2" href="$group__l4__irq__api.html#gab24e0fc21a207fd566ece1e6fafbac48" title="Trigger an IRQ." alt="" coords="226,5,334,32"/>
+<area shape="rect" id="node4" href="$structL4_1_1Triggerable.html#a7109ca8b4aeac0169639f973c91a3a6b" title="Trigger the object." alt="" coords="196,56,364,83"/>
+<area shape="rect" id="node3" href="$group__l4__semaphore__api.html#ga7fc3931fba29e35a6690639c74774c43" title="Semaphore up operation (wrapper for trigger())." alt="" coords="8,5,145,32"/>
+<area shape="rect" id="node5" href="$structL4_1_1Semaphore.html#a3de7e4e35ff4dadab9a26f3b87fb76bc" title="Semaphore up operation (wrapper for trigger())." alt="" coords="5,56,148,83"/>
+</map>

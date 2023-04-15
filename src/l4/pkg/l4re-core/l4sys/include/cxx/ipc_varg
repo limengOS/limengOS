@@ -1,0 +1,513 @@
+// vi:set ft=cpp: -*- Mode: C++ -*-
+/*
+ * (c) 2014 Alexander Warg <alexander.warg@kernkonzept.com>
+ *
+ * This file is part of TUD:OS and distributed under the terms of the
+ * GNU General Public License 2.
+ * Please see the COPYING-GPL-2 file for details.
+ *
+ * As a special exception, you may use this file as part of a free software
+ * library without restriction.  Specifically, if other files instantiate
+ * templates or use macros or inline functions from this file, or you compile
+ * this file and link it with other files to produce an executable, this
+ * file does not by itself cause the resulting executable to be covered by
+ * the GNU General Public License.  This exception does not however
+ * invalidate any other reasons why the executable file might be covered by
+ * the GNU General Public License.
+ */
+#pragma once
+#pragma GCC system_header
+
+#include "types"
+#include "ipc_basics"
+
+namespace L4 { namespace Ipc L4_EXPORT {
+
+template< typename T, template <typename X> class B >
+struct Generic_va_type : B<T>
+{
+  enum { Id = B<T>::Id };
+  typedef B<T> ID;
+  typedef T const &Ret_value;
+  typedef T Value;
+
+  static Ret_value value(void const *d)
+  { return *reinterpret_cast<Value const *>(d); }
+
+  static void const *addr_of(Value const &v) { return &v; }
+
+  static unsigned size(void const *) { return sizeof(T); }
+
+  static L4_varg_type unsigned_id() { return (L4_varg_type)(Id & ~L4_VARG_TYPE_SIGN); }
+  static L4_varg_type signed_id() { return (L4_varg_type)(Id | L4_VARG_TYPE_SIGN); }
+  static L4_varg_type id() { return (L4_varg_type)Id; }
+};
+
+template< typename T > struct Va_type_id;
+template<> struct Va_type_id<l4_umword_t>  { enum { Id = L4_VARG_TYPE_UMWORD }; };
+template<> struct Va_type_id<l4_mword_t>   { enum { Id = L4_VARG_TYPE_MWORD }; };
+template<> struct Va_type_id<l4_fpage_t>   { enum { Id = L4_VARG_TYPE_FPAGE }; };
+template<> struct Va_type_id<void>         { enum { Id = L4_VARG_TYPE_NIL }; };
+template<> struct Va_type_id<char const *> { enum { Id = L4_VARG_TYPE_STRING }; };
+
+template< typename T > struct Va_type;
+
+template<> struct Va_type<l4_umword_t> : Generic_va_type<l4_umword_t, Va_type_id> {};
+template<> struct Va_type<l4_mword_t> : Generic_va_type<l4_mword_t, Va_type_id> {};
+template<> struct Va_type<l4_fpage_t> : Generic_va_type<l4_fpage_t, Va_type_id> {};
+
+template<> struct Va_type<void>
+{
+  typedef void Ret_value;
+  typedef void Value;
+
+  static void const *addr_of(void) { return 0; }
+
+  static void value(void const *) {}
+  static L4_varg_type id() { return L4_VARG_TYPE_NIL; }
+  static unsigned size(void const *) { return 0; }
+};
+
+template<> struct Va_type<char const *>
+{
+  typedef char const *Ret_value;
+  typedef char const *Value;
+
+  static void const *addr_of(Value v) { return v; }
+
+  static L4_varg_type id() { return L4_VARG_TYPE_STRING; }
+  static unsigned size(void const *s)
+  {
+    char const *_s = reinterpret_cast<char const *>(s);
+    int l = 1;
+    while (*_s)
+      {
+        ++_s; ++l;
+      }
+    return l;
+  }
+
+  static Ret_value value(void const *d) { return (char const *)d; }
+};
+
+/**
+ * Variably sized RPC argument.
+ */
+class Varg
+{
+private:
+  enum { Direct_data = 0x8000 };
+  l4_umword_t _tag;
+  char const *_d;
+
+public:
+
+  /// The data type for the tag
+  typedef l4_umword_t Tag;
+
+  /// \return the type field of the tag
+  L4_varg_type type() const { return (L4_varg_type)(_tag & 0xff); }
+  /**
+   * Get the size of the RPC argument
+   * \return  The size of the RPC argument
+   */
+  unsigned length() const { return _tag >> 16; }
+  /// \return the tag value (the Direct_data bit masked)
+  Tag tag() const { return _tag & ~Direct_data; }
+  /// Set Varg tag (usually from message)
+  void tag(Tag tag) { _tag = tag; }
+  /// Set Varg to indirect data value (usually in UTCB)
+  void data(char const *d) { _d = d; }
+
+  /// \return pointer to the data, also safe for direct data
+  char const *data() const
+  {
+    if (_tag & Direct_data)
+      {
+        union T { char const *d; char v[sizeof(char const *)]; };
+        return reinterpret_cast<T const *>(&_d)->v;
+      }
+    return _d;
+  }
+
+  /// Make uninitialized Varg
+#if __cplusplus >= 201103L
+  Varg() = default;
+#else
+  Varg() {}
+#endif
+
+  /// Make an indirect varg
+  Varg(L4_varg_type t, void const  *v, int len)
+  : _tag(t | ((l4_mword_t)len << 16)), _d((char const *)v)
+  {}
+
+  static Varg nil() { return Varg(L4_VARG_TYPE_NIL, 0, 0); }
+
+  /**
+   * \tparam V  The data type of the value to retrieve.
+   * \pre The Varg must be of type \a V (otherwise the result
+   *      is unpredictable).
+   * \return The value of the Varg as type V.
+   */
+  template< typename V >
+  typename Va_type<V>::Ret_value value() const
+  {
+    if (_tag & Direct_data)
+      {
+        union X { char const *d; V v; };
+        return reinterpret_cast<X const &>(_d).v;
+      }
+
+    return Va_type<V>::value(_d);
+  }
+
+
+  /// \return true if the Varg is of type T
+  template< typename T >
+  bool is_of() const { return Va_type<T>::id() == type(); }
+
+  /// \return true if the Varg is of nil type.
+  bool is_nil() const { return is_of<void>(); }
+
+  /// \return true if the Varg is an integer type (signed or unsigned).
+  bool is_of_int() const
+  { return (type() & ~L4_VARG_TYPE_SIGN) == L4_VARG_TYPE_UMWORD; }
+
+  /**
+   * Get the value of the Varg as type T.
+   * \tparam T  The expected type of the Varg.
+   * \param  v  Pointer to store the value
+   * \return true when the Varg is of type T, false if not
+   */
+  template< typename T >
+  bool get_value(typename Va_type<T>::Value *v) const
+  {
+    if (!is_of<T>())
+      return false;
+
+    *v = this->value<T>();
+    return true;
+  }
+
+  /// Set to indirect value of type T
+  template< typename T >
+  void set_value(void const *d)
+  {
+    typedef Va_type<T> Vt;
+    _tag = Vt::id() | (Vt::size(d) << 16);
+    _d = (char const *)d;
+  }
+
+  /// Set to directly stored value of type T
+  template<typename T>
+  void set_direct_value(T val, typename L4::Types::Enable_if<sizeof(T) <= sizeof(char const *), bool>::type = true)
+  {
+    static_assert(sizeof(T) <= sizeof(char const *), "direct Varg value too big");
+    typedef Va_type<T> Vt;
+    _tag = Vt::id() | (sizeof(T) << 16) | Direct_data;
+    union X { char const *d; T v; };
+    reinterpret_cast<X &>(_d).v = val;
+  }
+
+  /// Make Varg from indirect value (pointer)
+  template<typename T> explicit
+  Varg(T const *data) { set_value<T>(data); }
+  /// Make Varg from null-terminated string
+  Varg(char const *data) { set_value<char const *>(data); }
+
+  /// Make Varg from direct value
+  template<typename T> explicit
+  Varg(T data, typename L4::Types::Enable_if<sizeof(T) <= sizeof(char const *), bool>::type = true)
+  { set_direct_value<T>(data); }
+};
+
+
+template<typename T>
+class Varg_t : public Varg
+{
+public:
+  typedef typename Va_type<T>::Value Value;
+  explicit Varg_t(Value v) : Varg()
+  { _data = v; set_value<T>(Va_type<T>::addr_of(_data)); }
+
+private:
+  Value _data;
+};
+
+template<unsigned MAX = L4_UTCB_GENERIC_DATA_SIZE>
+class Varg_list;
+
+/**
+ * List of variable-sized RPC parameters as received by the server.
+ *
+ * The list can be traversed exactly once using \a next().
+ *
+ * This is a reference list, where the returned Varg point to
+ * data in the underlying storage, conventionally the UTCB.
+ * This type should only be used in server functions when the
+ * implementation can ensure that all content is read before
+ * the UTCB is reused (e.g. for IPC), otherwise use Varg_list.
+ */
+class Varg_list_ref
+{
+private:
+  template<unsigned T>
+  friend class Varg_list;
+
+  /// Iterator state of a Varg list
+  class Iter_state
+  {
+  private:
+    using M = l4_umword_t; ///< internal shortcut for msg words
+    using Mp = M const *;  ///< internal shortcut for msg pointer
+    Mp _c; ///< current position of an iterator
+    Mp _e; ///< end of the message (first word behind)
+
+    /// get pointer to the start of the next Varg
+    Mp next_arg(Varg const &a) const
+    {
+      return _c + 1 + (Msg::align_to<M>(a.length()) / sizeof(M));
+    }
+
+  public:
+    /// default (invalid/empty/end) state
+    Iter_state() : _c(nullptr) {}
+
+    /// create a state for varg at c, end at e
+    Iter_state(Mp c, Mp e) : _c(c), _e(e)
+    {}
+
+    /// return true if the state is valid (not end)
+    bool valid() const
+    { return _c && _c < _e; }
+
+    /// get the current position (of current Varg)
+    Mp begin() const { return _c; }
+
+    /// get the end of the message (behind last Varg)
+    Mp end() const { return _e; }
+
+    /**
+     * Pop the first Varg from the list
+     * (Varg::nil() if there are no more)
+     */
+    Varg pop()
+    {
+      if (!valid())
+        return Varg::nil();
+
+      Varg a;
+      a.tag(_c[0]);
+      a.data(reinterpret_cast<char const *>(&_c[1]));
+      _c = next_arg(a);
+      if (_c > _e)
+        return Varg::nil();
+
+      return a;
+    }
+
+    /// equality of two Iter_state objects
+    bool operator == (Iter_state const &o) const
+    { return _c == o._c; }
+
+    /// inequality of two Iter_state objects
+    bool operator != (Iter_state const &o) const
+    { return _c != o._c; }
+  };
+
+  Iter_state _s; ///< current state of the Valist
+
+public:
+  /// Create an empty parameter list.
+  Varg_list_ref() = default;
+
+  /**
+   *  Create a parameter list over a given memory region.
+   *
+   *  \param start Pointer to start of the parameter list.
+   *  \param end   Pointer to end of the list (inclusive).
+   */
+  Varg_list_ref(void const *start, void const *end)
+  : _s(reinterpret_cast<l4_umword_t const *>(start),
+       reinterpret_cast<l4_umword_t const *>(end))
+  {}
+
+  /// Iterator for Valists
+  class Iterator
+  {
+  private:
+    Iter_state _s; ///< The current position (next unread arg)
+    Varg _a; ///< The current Varg read from the list
+
+  public:
+    /// Create a new iterator
+    Iterator(Iter_state const &s)
+    : _s(s)
+    {
+      _a = _s.pop();
+    }
+
+    /// validity check for the iterator
+    explicit operator bool () const
+    { return !_a.is_nil(); }
+
+    /// increment iterator to the next arg
+    Iterator &operator ++ ()
+    {
+      if (!_a.is_nil())
+        _a = _s.pop();
+
+      return *this;
+    }
+
+    /// dereference the iterator, get Varg
+    Varg operator * () const
+    { return _a; }
+
+    /// check for equality
+    bool equals(Iterator const &o) const
+    {
+      if (_a.is_nil() && o._a.is_nil())
+        return true;
+
+      return _s ==  o._s;
+    }
+
+    bool operator == (Iterator const &o) const
+    { return equals(o); }
+
+    bool operator != (Iterator const &o) const
+    { return !equals(o); }
+  };
+
+  /// Get the next parameter in the list.
+  Varg pop_front()
+  { return _s.pop(); }
+
+  /// Get the next parameter in the list.
+  Varg next()
+    L4_DEPRECATED("Use range for or pop_front.")
+  { return _s.pop(); }
+
+  /// Returns an interator to the first Varg
+  Iterator begin() const
+  { return Iterator(_s); }
+
+  /// Returns the end of the list
+  Iterator end() const
+  { return Iterator(Iter_state()); }
+};
+
+/**
+ * Self-contained list of variable-sized RPC parameters.
+ *
+ * Works like Varg_list_ref but contains a full copy of the data.
+ * Use this as a parameter in server functions, if the handler function
+ * needs to use the UTCB (e.g. while sending further IPC).
+ */
+template<unsigned MAX>
+class Varg_list : public Varg_list_ref
+{
+  l4_umword_t data[MAX];
+  Varg_list(Varg_list const &);
+
+public:
+  /// Create a parameter list as a copy from a referencing list.
+  Varg_list(Varg_list_ref const &r)
+  {
+    if (!r._s.valid())
+      return;
+
+    l4_umword_t const *rs = r._s.begin();
+    unsigned c = r._s.end() - rs;
+    for (unsigned i = 0; i < c; ++i)
+      data[i] = rs[i];
+
+    this->_s = Iter_state(data, data + c);
+  }
+};
+
+
+namespace Msg {
+template<> struct Elem<Varg const *>
+{
+  typedef Varg const *arg_type;
+  typedef Varg_list_ref svr_type;
+  typedef Varg_list_ref svr_arg_type;
+  enum { Is_optional = false };
+};
+
+template<> struct Is_valid_rpc_type<Varg> : L4::Types::False {};
+template<> struct Is_valid_rpc_type<Varg *> : L4::Types::False {};
+template<> struct Is_valid_rpc_type<Varg &> : L4::Types::False {};
+template<> struct Is_valid_rpc_type<Varg const &> : L4::Types::False {};
+
+template<> struct Direction<Varg const *> : Dir_in {};
+template<> struct Class<Varg const *> : Cls_data {};
+
+template<typename DIR, typename CLASS>
+struct Clnt_val_ops<Varg, DIR, CLASS>;
+
+template<>
+struct Clnt_val_ops<Varg, Dir_in, Cls_data> :
+  Clnt_noops<Varg const &>
+{
+  using Clnt_noops<Varg const &>::to_msg;
+  static int to_msg(char *msg, unsigned offs, unsigned limit,
+                    Varg const &a, Dir_in, Cls_data)
+  {
+    for (Varg const *i = &a; i->tag(); ++i)
+      {
+        offs = align_to<l4_umword_t>(offs);
+        if (L4_UNLIKELY(!check_size<l4_umword_t>(offs, limit)))
+          return -L4_EMSGTOOLONG;
+        *reinterpret_cast<l4_umword_t*>(msg + offs) = i->tag();
+        offs += sizeof(l4_umword_t);
+        if (L4_UNLIKELY(!check_size<char>(offs, limit, i->length())))
+          return -L4_EMSGTOOLONG;
+        char const *d = i->data();
+        for (unsigned x = 0; x < i->length(); ++x)
+          msg[offs++] = *d++;
+      }
+
+    return offs;
+  }
+};
+
+template<>
+struct Svr_val_ops<Varg_list_ref, Dir_in, Cls_data> :
+  Svr_noops<Varg_list_ref>
+{
+  using Svr_noops<Varg_list_ref>::to_svr;
+  static int to_svr(char *msg, unsigned offset, unsigned limit,
+                    Varg_list_ref &a, Dir_in, Cls_data)
+  {
+    unsigned start = align_to<l4_umword_t>(offset);
+    unsigned offs;
+    for (offs = start; offs < limit;)
+      {
+        unsigned noffs = align_to<l4_umword_t>(offs);
+        if (L4_UNLIKELY(!check_size<l4_umword_t>(noffs, limit)))
+          break;
+
+        offs = noffs;
+        Varg arg;
+        arg.tag(*reinterpret_cast<l4_umword_t*>(msg + offs));
+
+        if (!arg.tag())
+          break;
+
+        offs += sizeof(l4_umword_t);
+
+        if (L4_UNLIKELY(!check_size<char>(offs, limit, arg.length())))
+          return -L4_EMSGTOOLONG;
+        offs += arg.length();
+      }
+
+    a = Varg_list_ref(msg + start, msg + align_to<l4_umword_t>(offs));
+    return offs;
+  }
+};
+}
+}}

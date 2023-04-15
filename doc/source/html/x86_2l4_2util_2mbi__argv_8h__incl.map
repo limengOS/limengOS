@@ -1,0 +1,7 @@
+<map id="x86/l4/util/mbi_argv.h" name="x86/l4/util/mbi_argv.h">
+<area shape="rect" id="node1" title="command line handling" alt="" coords="63,5,226,32"/>
+<area shape="rect" id="node2" href="$l4_2sys_2l4int_8h.html" title="Fixed sized integer types, generic version." alt="" coords="5,155,111,181"/>
+<area shape="rect" id="node3" href="$mb__info_8h.html" title="Multiboot info structure as defined by GRUB." alt="" coords="81,80,209,107"/>
+<area shape="rect" id="node4" href="$compiler_8h.html" title="L4 compiler related defines." alt="" coords="164,155,296,181"/>
+<area shape="rect" id="node5" title=" " alt="" coords="169,229,291,256"/>
+</map>

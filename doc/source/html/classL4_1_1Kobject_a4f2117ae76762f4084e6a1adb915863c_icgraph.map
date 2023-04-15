@@ -1,0 +1,26 @@
+<map id="L4::Kobject::cap" name="L4::Kobject::cap">
+<area shape="rect" id="node1" title="Return capability selector." alt="" coords="704,478,828,505"/>
+<area shape="rect" id="node2" href="$classL4_1_1Icu.html#ada7541da586ea09b925b4d90d7dc357e" title="Bind an interrupt line of an interrupt controller to an interrupt object." alt="" coords="501,57,601,83"/>
+<area shape="rect" id="node6" href="$structL4_1_1Irq__mux.html#acfd63279449d20bef4226da9a01e5da9" title="Attach an IRQ to this multiplexer." alt="" coords="481,107,622,134"/>
+<area shape="rect" id="node7" href="$classL4_1_1Factory.html#ab52604d4abed4d6009ce51a59492edd7" title="Generic create call to the factory." alt="" coords="481,158,621,185"/>
+<area shape="rect" id="node9" href="$classL4_1_1Thread.html#aacd56bbf983577cfc591f21fd511d3b6" title="Exchange basic thread registers." alt="" coords="477,209,626,235"/>
+<area shape="rect" id="node10" href="$classL4_1_1Vcon.html#a367997ce7608f9fd170828bba6d025ed" title="Get attributes of this virtual console." alt="" coords="483,259,619,286"/>
+<area shape="rect" id="node11" href="$classL4_1_1Icu.html#a356cfa88076c92e121ab7760d50d5f18" title="Get information about the ICU features." alt="" coords="503,310,600,337"/>
+<area shape="rect" id="node12" href="$classL4_1_1Icu.html#ab58aa015a5216a0dece5d85089b42aaa" title="Mask an IRQ line." alt="" coords="497,361,605,387"/>
+<area shape="rect" id="node13" href="$classL4_1_1Thread.html#a9bcade7e8db8d775cc1f2a2a6225c845" title="Apply sender modification rules." alt="" coords="480,412,623,453"/>
+<area shape="rect" id="node15" href="$classL4_1_1Vcon.html#ac53da09bc3a23b5fd654def074175046" title="Read data from this virtual console." alt="" coords="494,478,609,505"/>
+<area shape="rect" id="node16" href="$classL4_1_1Vcon.html#af400882103c8601a4b0750985c57d7c4" title="Send data to this virtual console." alt="" coords="493,529,609,555"/>
+<area shape="rect" id="node17" href="$classL4_1_1Vcon.html#a95422b151c12b5e20dda868972516f1a" title="Set the attributes of this virtual console." alt="" coords="484,579,619,606"/>
+<area shape="rect" id="node18" href="$classL4_1_1Icu.html#a4258b1c32fc968b66a1ce15191f51b8b" title="Set interrupt mode." alt="" coords="483,630,619,657"/>
+<area shape="rect" id="node19" href="$structL4_1_1Triggerable.html#a7109ca8b4aeac0169639f973c91a3a6b" title="Trigger the object." alt="" coords="467,681,635,707"/>
+<area shape="rect" id="node21" href="$classL4_1_1Icu.html#aa34e56cdac798b1949fcc00553386b8b" title="Remove binding of an interrupt line from the interrupt controller object." alt="" coords="493,731,609,758"/>
+<area shape="rect" id="node22" href="$classL4_1_1Thread.html#a94a6d8a5a7a78fa99ef3c6358e0a0459" title="Enable the vCPU feature for the thread." alt="" coords="461,782,642,809"/>
+<area shape="rect" id="node23" href="$classL4_1_1Thread.html#ac341b827b00c21bc3753c30163e0f173" title="Enable the extended vCPU feature for the thread." alt="" coords="447,833,656,859"/>
+<area shape="rect" id="node24" href="$classL4_1_1Vcon.html#a83407df2f5b674126d33505d73f5d34b" title="Write data to this virtual console." alt="" coords="492,883,611,910"/>
+<area shape="rect" id="node3" href="$classL4virtio_1_1Driver_1_1Device.html#a1c9b791b723e7e8ad2eae927094b487d" title="Register a triggerable to receive notifications from the device." alt="" coords="223,5,395,47"/>
+<area shape="rect" id="node4" href="$classL4virtio_1_1Driver_1_1Device.html#a4f8b3d73188c3b6664755b81b80e441c" title="Contacts the device and starts the initial handshake." alt="" coords="223,71,395,112"/>
+<area shape="rect" id="node5" href="$classL4virtio_1_1Driver_1_1Block__device.html#a688df51bdec4ba327a6c0b48a83a115a" title="Setup a connection to a device and set up shared memory." alt="" coords="5,71,172,112"/>
+<area shape="rect" id="node8" href="$classL4Re_1_1Mem__alloc.html#a44b301573ae859e8406400338cc8e924" title="Allocate anonymous memory." alt="" coords="223,158,395,185"/>
+<area shape="rect" id="node14" href="$classL4Re_1_1Util_1_1Object__registry.html#aeeea59583ffddfef4e7c1c3e6eed41b6" title="Remove a server object from the handler list." alt="" coords="220,412,399,453"/>
+<area shape="rect" id="node20" href="$structL4_1_1Semaphore.html#a3de7e4e35ff4dadab9a26f3b87fb76bc" title="Semaphore up operation (wrapper for trigger())." alt="" coords="238,681,381,707"/>
+</map>

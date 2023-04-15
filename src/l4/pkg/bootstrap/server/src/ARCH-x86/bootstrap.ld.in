@@ -1,0 +1,140 @@
+/* SPDX-License-Identifier: GPL-2.0-only or License-Ref-kk-custom */
+/*
+ * Copyright (C) 2005-2011 Technische Universität Dresden.
+ * Copyright (C) 2014-2015 Kernkonzept GmbH.
+ */
+#include "ldscript.inc"
+
+ENTRY(_start)
+
+PHDRS {
+  data PT_LOAD;
+  /* having the mods PHDR defines some empty PHDR which QEMU does not seem
+   * to like... */
+#ifdef IMAGE_MODE
+  mods PT_LOAD;
+#define MODS_PHDR mods
+#else
+#define MODS_PHDR data
+#endif
+}
+
+SECTIONS
+{
+#ifdef ARCH_amd64
+  . = LINKADDR + SIZEOF_HEADERS;
+#else
+  . = LINKADDR;
+#endif
+  PROVIDE (ImageBase = LINKADDR);
+  .hash : { *(.hash) } : data    /* this MUST come first! */
+  /* Merge .text, .rodata, and .data in one segment to save space */
+
+  /* provide at least 1K space for PE header in case of EFI */
+  /* NOTE: the .hash section is not used for EFI, so we declare
+   *       this as free space for PE too
+   */
+  /* FXIME: should make this depending on EFI */
+  . = (. < (0x400 + LINKADDR)) ? (LINKADDR + 0x400) : .;
+
+  .text :
+  {
+    *(.init)
+    KEEP(*(.multiboot2))
+    *(.text .text.* .gnu.linkonce.t*)
+
+    *(.rodata*)
+  } : data
+
+  .note.gnu.build-id : { *(.note.gnu.build-id) } : data
+  .dynsym   : { *(.dynsym) } : data
+  .dynstr   : { *(.dynstr) } : data
+  .reloc    : { *(.reloc) } : data
+  .rel.dyn :
+  {
+    *(.rel.*) *(.rel.module_info)
+  } : data
+
+  .data :
+  {
+    . = ALIGN(8);
+    *(.data)
+    *(.data.*)
+    *(.plt)
+    *(.got.plt)
+    *(.got)
+
+    CTORS
+    PLATFORMS
+
+  } : data
+
+  .dynamic  : { *(.dynamic) } : data
+  .rela.dyn :
+  {
+    *(.rela.init)
+    *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+    *(.rela.fini)
+    *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+    *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+    *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+    *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+    *(.rela.ctors)
+    *(.rela.dtors)
+    *(.rela.got)
+    *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+    *(.rela.ldata .rela.ldata.* .rela.gnu.linkonce.l.*)
+    *(.rela.lbss .rela.lbss.* .rela.gnu.linkonce.lb.*)
+    *(.rela.lrodata .rela.lrodata.* .rela.gnu.linkonce.lr.*)
+    *(.rela.ifunc)
+    *(.rela.module*)
+    *(.rela.init_array)
+  } : data
+  .rela.plt :
+  {
+    *(.rela.plt)
+    *(.rela.iplt)
+  } : data
+
+  _edata  =  .;
+  PROVIDE (edata = .);
+  . = ALIGN(4096);
+  __bss_start = .;
+  .bss :
+  {
+   *(.bss)
+   *(.bss.*)
+   *(COMMON)
+   *(.dynbss)
+   *(.bss_memmap)
+  } : data
+  _end = . ;
+  PROVIDE (end = .);
+  . = ALIGN(4096);
+
+/* Only move modules to modaddr if bootstrap is being loaded by an elf
+ * loader, and we do not need to copy images around at runtime (e.g. with
+ * compression) */
+#if defined(PLACE_MODULES_AT_MODADDR)
+  . = RAM_BASE + MODADDR;
+#endif
+  .data.m :
+  {
+    _module_data_start = .;
+    *(.module_data)
+    _module_data_end = .;
+  } : MODS_PHDR
+
+  /DISCARD/ : {
+    *(.rela.reloc)
+    *(.note.GNU-stack)
+    *(.jcr)
+    *(.interp)
+    *(.comment)
+    *(.note)
+    *(.eh_frame)
+    *(.stab)
+    *(.stabstr)
+    *(.fini)
+  }
+}

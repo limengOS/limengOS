@@ -1,0 +1,7 @@
+<map id="L4::Type_info::Demand_union_t&lt; D1, D2 &gt;" name="L4::Type_info::Demand_union_t&lt; D1, D2 &gt;">
+<area shape="rect" id="node1" title="Template type statically describing the combination of two Demand object." alt="" coords="33,648,204,740"/>
+<area shape="rect" id="node5" href="$structL4_1_1Type__info_1_1Demand__union__t.html" title=" " alt="" coords="25,832,213,953"/>
+<area shape="rect" id="node2" href="$structL4_1_1Type__info_1_1Demand__t.html" title=" " alt="" coords="5,448,232,599"/>
+<area shape="rect" id="node3" href="$classL4_1_1Type__info_1_1Demand.html" title="Data type for expressing the needed receive buffers at the server&#45;side of an interface." alt="" coords="28,5,199,156"/>
+<area shape="rect" id="node4" href="$structL4_1_1Type__info_1_1Demand__t.html" title="Template type statically describing demand of receive buffers." alt="" coords="135,205,313,312"/>
+</map>

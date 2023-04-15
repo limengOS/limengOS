@@ -1,0 +1,5 @@
+<map id="l4_trunc_size" name="l4_trunc_size">
+<area shape="rect" id="node1" title="Round an address down to the next lower flex page with size bits." alt="" coords="243,31,349,57"/>
+<area shape="rect" id="node2" href="$classcxx_1_1List__alloc.html#a9028a4d3bf8a79f61b2d6ee16736f51a" title="Allocate a memory block of min &lt;= size &lt;= max." alt="" coords="5,5,195,32"/>
+<area shape="rect" id="node3" href="$group__l4__fpage__api.html#ga960465b596caf60adc6c5042e9257f0a" title="Determine maximum flex page size of a region." alt="" coords="23,56,177,83"/>
+</map>

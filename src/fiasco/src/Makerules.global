@@ -1,0 +1,124 @@
+# -*- makefile  -*-
+# vi:set ft=make:
+
+#
+# Makerules for the sources of Fiasco
+#
+
+#
+# Source-code locations
+#
+
+
+# If building in a separate srcdir, prepend it to module-provided include paths
+ifneq ($(srcdir),.)
+VPATH 		:= $(addprefix $(srcdir)/, $(VPATH))
+PRIVATE_INCDIR	:= $(addprefix $(srcdir)/, $(PRIVATE_INCDIR))
+endif
+
+# Finally add the current directory and the preprocessor directory
+VPATH 		+= . auto
+PRIVATE_INCDIR	+= . auto
+
+#
+# Function for all Makerules.<subsystem> files
+#
+
+MAKERULES_SUBSYS = $(foreach subsys, $(SUBSYSTEMS), $(firstword $(wildcard $(addsuffix /Makerules.$(subsys),$(VPATH) $(srcdir)))))
+
+#
+# Build certain sources with certain compiler flags.
+#
+
+# COMP_MESSAGE_NOOPT for files in NOOPT.
+comp_msg =  $(if $(filter $(1),$(NOOPT)),$(COMP_MESSAGE_NOOPT),$(COMP_MESSAGE))
+
+# {C,CXX}FLAGS: Filter-out -DNDEBUG for files in NONDEBUG.
+comp_c_flgs = $(filter-out $(if $(filter $(1),$(NONDEBUG)),-DNDEBUG),$(CFLAGS))
+comp_cc_flgs = $(filter-out $(if $(filter $(1),$(NONDEBUG)),-DNDEBUG),$(CXXFLAGS))
+
+# OPT_{C,CXX}FLAGS: For files not in NOPPT. Otherwise NOOPT_{C,CXX}FLAGS.
+comp_c_opt_flgs = $(if $(filter $(1),$(NOOPT)),$(NOOPT_CFLAGS),$(OPT_CFLAGS))
+comp_cc_opt_flgs = $(if $(filter $(1),$(NOOPT)),$(NOOPT_CXXFLAGS),$(OPT_CXXFLAGS))
+
+# PROF_FLAGS: Only for files neither in NO_PROFILE nor in NOOPT.
+comp_prof_flgs = $(if $(filter $(1),$(NOPROFILE)$(NOOPT)),,$(PROF_FLAGS))
+
+# INST_FLAGS: Only for files in INSTRUMENT.
+comp_inst_flgs = $(if $(filter $(1),$(INSTRUMENT)),$(INST_FLAGS))
+
+# NOBUILTIN
+comp_nobuiltin = $(if $(filter $(1),$(NOBUILTIN)),-fno-builtin)
+
+# Put it all together.
+c_flgs = $(CPPFLAGS) $(call comp_c_flgs,$(1)) $(call comp_c_opt_flgs,$(1)) \
+         $(call comp_prof_flgs,$(1)) $(call comp_inst_flgs,$(1)) \
+         $(call comp_nobuiltin,$(1))
+cc_flgs = $(CPPFLAGS) $(call comp_cc_flgs,$(1)) $(call comp_cc_opt_flgs,$(1)) \
+          $(call comp_prof_flgs,$(1)) $(call comp_inst_flgs,$(1)) \
+          $(call comp_nobuiltin,$(1))
+
+as_flgs = $(CPPFLAGS) $(ASFLAGS)
+
+
+###
+
+#
+# Implicit rules
+#
+
+.PHONY: FORCE
+
+%.o:	%.cc
+	$(call comp_msg,$*)
+	$(VERBOSE)$(CXX) -c -MD -MP -MF .$*.cc.d.new -o $@ \
+	  $(call cc_flgs,$*) $(CXXFLAGS_$(basename $(notdir $@))) $<
+	@mv .$*.cc.d.new .$*.cc.d
+
+%.S:	%.cc
+	$(call comp_msg,$*)
+	$(VERBOSE)$(CC) -S -o $@ -fverbose-asm \
+	  $(call cc_flgs,$*) $(CXXFLAGS_$(basename $(notdir $@))) $<
+
+%.o:	%.c
+	$(call comp_msg,$*)
+	$(VERBOSE)$(CC) -c -MD -MP -MF .$*.c.d.new -o $@ \
+	  $(call c_flgs,$*) $(CFLAGS_$(basename $(notdir $@))) $<
+	@mv .$*.c.d.new .$*.c.d
+
+%.S:	%.c
+	$(call comp_msg,$*)
+	$(VERBOSE)$(CC) -S -o $@ -fverbose-asm \
+	  $(call c_flgs,$*) $(CFLAGS_$(basename $(notdir $@))) $<
+
+%.o:	%.S
+	$(COMP_MESSAGE)
+	$(VERBOSE)$(CC) -c -MD -MP -MF .$*.S.d.new -o $@ $(as_flgs) $<
+	@mv .$*.S.d.new .$*.S.d
+
+%.i:	%.c
+	$(call comp_msg,$*)
+	$(VERBOSE)$(CC) -E -dD -o $@ \
+	  $(call c_flgs,$*) $(CFLAGS_$(basename $(notdir $@))) $<
+
+%.i:	%.cc
+	$(call comp_msg,$*)
+	$(VERBOSE)$(CXX) -E -dD -o $@ \
+	  $(call cc_flgs,$*) $(CXXFLAGS_$(basename $(notdir $@))) $<
+
+%.i:	%.S
+	$(COMP_MESSAGE)
+	$(VERBOSE)$(CC) -E -dD -o $@ $(as_flgs) $<
+
+%.lds:	%.ld
+	$(COMP_MESSAGE)
+	$(VERBOSE)$(CPP) -MD -MP -MF .$@.d -MT $@ -undef -P -DASSEMBLER -o $@ $(CPPFLAGS) $<
+
+(%): %
+	$(AR_MESSAGE)
+	$(VERBOSE)$(AR) $(ARFLAGS) $@ $<
+
+vpath %.ld $(srcdir)
+
+# Suck in user-specific optional Makerules files
+-include Makerules.local

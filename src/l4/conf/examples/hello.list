@@ -1,0 +1,13 @@
+#,  , , modified
+#modaddr 0x00115000
+#modaddr 0xa000000
+modaddr 0x00100000
+
+entry hello
+roottask moe --init=rom/hello
+#roottask moe rom/hello.cfg
+module l4re
+module ned
+module hello.cfg
+module hello
+

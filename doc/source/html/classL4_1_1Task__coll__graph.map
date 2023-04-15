@@ -1,0 +1,6 @@
+<map id="L4::Task" name="L4::Task">
+<area shape="rect" id="node1" title="C++ interface of the Task kernel object, see Task for the C interface." alt="" coords="87,375,222,555"/>
+<area shape="rect" id="node2" href="$classL4_1_1Kobject__t.html" title=" " alt="" coords="47,204,263,325"/>
+<area shape="rect" id="node3" href="$classL4_1_1Kobject.html" title="Base class for all kinds of kernel objects and remote objects, referenced by capabilities." alt="" coords="5,13,120,105"/>
+<area shape="rect" id="node4" href="$classL4_1_1Kobject__t.html" title="Helper class to create an L4Re interface class that is derived from a single base class." alt="" coords="144,5,352,112"/>
+</map>

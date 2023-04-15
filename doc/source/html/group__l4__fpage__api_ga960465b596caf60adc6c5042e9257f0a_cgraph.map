@@ -1,0 +1,4 @@
+<map id="l4_fpage_max_order" name="l4_fpage_max_order">
+<area shape="rect" id="node1" title="Determine maximum flex page size of a region." alt="" coords="5,5,160,32"/>
+<area shape="rect" id="node2" href="$group__l4__memory__api.html#ga792959ba1e87fecf90018876f32d7bc9" title="Round an address down to the next lower flex page with size bits." alt="" coords="208,5,315,32"/>
+</map>
