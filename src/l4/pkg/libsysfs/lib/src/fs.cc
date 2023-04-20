@@ -213,9 +213,12 @@ Sysfs_dir::get_entry(const char *name, int flags, mode_t mode,
     long f;
     int  n;
     s >> f >> n;
-    *file = cxx::ref_ptr(new Sysfs_file(static_cast<int>(f), (unsigned int)n));
-    if (!file->ptr())
-      r = -ENOMEM;
+    if (f >= 0) {
+        *file = cxx::ref_ptr(new Sysfs_file(static_cast<int>(f), (unsigned int)n));
+        if (!file->ptr())
+            r = -ENOMEM;
+    } else
+        r = f;
   }
 
   release_region((void*)d);
@@ -366,8 +369,7 @@ ssize_t Sysfs_file::rwv(const struct iovec *v, int iovcnt, L4::Opcode op) throw(
   ssize_t n = 0, sum = 0;
   for (int i = 0; i < iovcnt; ++i)
     {
-      if (v[i].iov_len < L4_PAGESIZE ||     /* should large than L4_PAGESIZE to call get_region_ds */
-            get_region_ds(v[i].iov_base, v[i].iov_len, &ds) != 0){
+      if (v[i].iov_len < L4_PAGESIZE){
         n = read_write(v[i].iov_base, v[i].iov_len, op);
       }else {
         n = map_bufpage_read_write(v[i].iov_base, v[i].iov_len, op);
