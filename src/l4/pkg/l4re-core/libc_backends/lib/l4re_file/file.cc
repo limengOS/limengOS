@@ -689,6 +689,26 @@ noexcept(noexcept(getcwd(buf, size)))
   return buf;
 }
 
+extern "C" int pipe(int pipefd[2])
+noexcept(noexcept(pipe(&pipefd[0])))
+{
+    cxx::Ref_ptr<L4Re::Vfs::File> dir;
+    __internal_resolvedir(AT_FDCWD, "/sys", 0, 0, &dir);
+    if (!dir)
+        return -1;
+    Ref_ptr<File> f[2];
+    int r = dir->pipe(f);
+    if (r < 0)
+    {
+      errno = -r;
+      return -1;
+    }
+    pipefd[0] = L4Re::Vfs::vfs_ops->alloc_fd(f[0]);
+    pipefd[1] = L4Re::Vfs::vfs_ops->alloc_fd(f[1]);
+
+    return r;
+}
+
 extern "C" int chroot(const char *p)
 noexcept(noexcept(chroot(p)))
 {

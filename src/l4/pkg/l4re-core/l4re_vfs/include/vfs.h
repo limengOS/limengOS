@@ -413,6 +413,7 @@ public:
    * \return >=0 on success, or <0 on error.
    */
   virtual int ioctl(unsigned long cmd, va_list args) throw() = 0;
+  virtual int pipe(cxx::Ref_ptr<File> f[2]) throw() = 0;
 };
 
 inline

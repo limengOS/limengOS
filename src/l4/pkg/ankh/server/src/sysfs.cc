@@ -49,6 +49,7 @@ long sys_lseek(unsigned int fd, off_t offset, unsigned int origin);
 long sys_ftruncate(unsigned int fd, unsigned long length);
 long sys_fchmod(unsigned int fd, mode_t m);
 long sys_mkdir(const char *, mode_t);
+long sys_pipe(int *fildes);
 
 void prepare_namespace(void);
 int mck_root_data_setup(char const *, char const *);
@@ -156,6 +157,7 @@ public:
   static int ftruncate(L4::Ipc::Iostream &ios);
   static int fchmod(L4::Ipc::Iostream &ios);
   static int mkdir(L4::Ipc::Iostream &ios);
+  static int pipe(L4::Ipc::Iostream &ios);
 
   static Func_ptr func_p[] ;
 };
@@ -172,12 +174,13 @@ enum
   OP_FTRUNCATE64,
   OP_FCHMOD,
   OP_MKDIR,
+  OP_PIPE,
 };
 */
 sys_file_server::Func_ptr sys_file_server::func_p[] =
     { open,   read,   write, 
       close,  stat64, lseek,  ftruncate,
-      fchmod, mkdir,
+      fchmod, mkdir,  pipe,
     };
 
 int sys_file_server::read(L4::Ipc::Iostream &ios)
@@ -313,6 +316,17 @@ int sys_file_server::mkdir(L4::Ipc::Iostream &ios)
   long r = sys_mkdir(n, mode);
 
   ios << (long)r;
+  return L4_EOK;
+}
+
+int sys_file_server::pipe(L4::Ipc::Iostream &ios)
+{
+  int fildes[2];
+
+  long r = sys_pipe(fildes);
+
+  ios << (long)r;
+  ios << (int)fildes[0] << (int)fildes[1] << (int)buf_pages;
   return L4_EOK;
 }
 

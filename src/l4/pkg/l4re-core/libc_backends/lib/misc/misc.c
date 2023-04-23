@@ -185,15 +185,6 @@ mode_t umask(mode_t mask)
   return 0;
 }
 
-int pipe(int pipefd[2])
-{
-  printf("Unimplemented: %s()\n", __func__);
-  printf("    Caller %p\n", __builtin_return_address(0));
-  (void)pipefd;
-  errno = EINVAL;
-  return -1;
-}
-
 #include <sys/wait.h>
 pid_t waitpid(pid_t pid, int *status, int options)
 {

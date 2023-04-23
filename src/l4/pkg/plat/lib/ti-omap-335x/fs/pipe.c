@@ -335,7 +335,6 @@ void generic_pipe_buf_release(struct pipe_inode_info *pipe,
 }
 EXPORT_SYMBOL(generic_pipe_buf_release);
 
-#ifndef MCK_LINUX
 static const struct pipe_buf_operations anon_pipe_buf_ops = {
 	.can_merge = 1,
 	.map = generic_pipe_buf_map,
@@ -483,7 +482,9 @@ pipe_write(struct kiocb *iocb, const struct iovec *_iov,
 	pipe = inode->i_pipe;
 
 	if (!pipe->readers) {
+#ifndef MCK_LINUX
 		send_sig(SIGPIPE, current, 0);
+#endif
 		ret = -EPIPE;
 		goto out;
 	}
@@ -532,7 +533,9 @@ redo1:
 		int bufs;
 
 		if (!pipe->readers) {
+#ifndef MCK_LINUX
 			send_sig(SIGPIPE, current, 0);
+#endif
 			if (!ret)
 				ret = -EPIPE;
 			break;
@@ -1299,4 +1302,3 @@ static void __exit exit_pipe_fs(void)
 
 fs_initcall(init_pipe_fs);
 module_exit(exit_pipe_fs);
-#endif

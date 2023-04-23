@@ -4780,6 +4780,41 @@ void __wake_up_locked_key(wait_queue_head_t *q, unsigned int mode, void *key)
 EXPORT_SYMBOL_GPL(__wake_up_locked_key);
 
 /**
+ * __wake_up_sync_key - wake up threads blocked on a waitqueue.
+ * @q: the waitqueue
+ * @mode: which threads
+ * @nr_exclusive: how many wake-one or wake-many threads to wake up
+ * @key: opaque value to be passed to wakeup targets
+ *
+ * The sync wakeup differs that the waker knows that it will schedule
+ * away soon, so while the target thread will be woken up, it will not
+ * be migrated to another CPU - ie. the two threads are 'synchronized'
+ * with each other. This can prevent needless bouncing between CPUs.
+ *
+ * On UP it can prevent extra preemption.
+ *
+ * It may be assumed that this function implies a write memory barrier before
+ * changing the task state if and only if any tasks are woken up.
+ */
+void __wake_up_sync_key(wait_queue_head_t *q, unsigned int mode,
+            int nr_exclusive, void *key)
+{
+    unsigned long flags;
+    int wake_flags = WF_SYNC;
+
+    if (unlikely(!q))
+        return;
+
+    if (unlikely(!nr_exclusive))
+        wake_flags = 0;
+
+    spin_lock_irqsave(&q->lock, flags);
+    __wake_up_common(q, mode, nr_exclusive, wake_flags, key);
+    spin_unlock_irqrestore(&q->lock, flags);
+}
+EXPORT_SYMBOL_GPL(__wake_up_sync_key);
+
+/**
  * __wake_up_sync - wake up threads blocked on a waitqueue.
  * @q: the waitqueue
  * @mode: which threads

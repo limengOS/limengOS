@@ -42,6 +42,7 @@ enum
   OP_FTRUNCATE64,
   OP_FCHMOD,
   OP_MKDIR,
+  OP_PIPE,
 };
 
 static void *allocate_new_region(long size, long mem_flags,
@@ -104,6 +105,7 @@ public:
   explicit Sysfs_dir(void) throw() {}
   int get_entry(const char *, int, mode_t, Ref_ptr<File> *) throw();
   int mkdir(const char *, mode_t) throw();
+  int pipe(Ref_ptr<File> file[2]) throw();
   #if   0
   //ssize_t getdents(char *, size_t) throw();
   int fstat64(struct stat64 *buf) const throw();
@@ -253,6 +255,32 @@ Sysfs_dir::mkdir(const char *name, mode_t mode) throw()
     s >> r;
 
   release_region((void*)d);
+
+  return r;
+}
+
+int 
+Sysfs_dir::pipe(Ref_ptr<File> file[2]) throw()
+{
+  L4::Ipc::Iostream s(l4_utcb());
+
+  s << L4::Opcode(OP_PIPE);
+  int r = l4_error(s.call(sysfs_get_server().cap(), L4RE_PROTO_SYSFS));
+ 
+  if (r >= 0)
+  {
+    long r2;
+    int f, f1, n;
+
+    s >> r2 >> f >> f1 >> n;
+    if (r2 >= 0) {
+        file[0] = cxx::ref_ptr(new Sysfs_file(static_cast<int>(f), (unsigned int)n));
+        file[1] = cxx::ref_ptr(new Sysfs_file(static_cast<int>(f1), (unsigned int)n));
+        if (!(&file[1])->ptr())
+            r = -ENOMEM;
+    } else
+        r = (int)r2;
+  }
 
   return r;
 }

@@ -215,6 +215,9 @@ public:
   int getpeername(sockaddr *, socklen_t *) throw()
   { return -ENOTSOCK; }
 
+  int pipe(cxx::Ref_ptr<File> []) throw()
+  { return -EINVAL; }
+
   ~Be_file() throw() = 0;
 
 private:
