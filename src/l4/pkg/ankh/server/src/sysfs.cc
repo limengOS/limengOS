@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string.h>
 #include <fcntl.h>
+#include <l4/dde/linux32/dde26.h>
 #include <l4/re/env>
 #include <l4/re/util/cap_alloc>
 #include <l4/re/util/object_registry>
@@ -23,21 +24,6 @@
 #include <pthread.h>
 #include <pthread-l4.h>
 #include <errno.h>
-
-/*  from dde/ddekit/src/thread.c */
-struct ddekit_condvar {
-    pthread_cond_t cond;
-};
-typedef struct ddekit_condvar ddekit_condvar_t;
-
-struct ddekit_thread {
-    pthread_t pthread;
-    void *data;
-    void *stack;
-    ddekit_condvar_t *sleep_cv;
-    const char *name;
-};
-typedef struct ddekit_thread ddekit_thread_t;
 
 extern "C" {
 long sys_open( const char * filename, int flags, int mode);
