@@ -638,7 +638,7 @@ Open the  browser.
 
 Type lwip IP addesss : 192.168.3.26
 
- ![](/home/lili/wk/limengOS/doc/pic/lwip_http.png)
+ ![](https://github.com/limengOS/limengOS/blob/main/doc/pic/lwip_http.png)
 
 BeagleBone Black :
 
