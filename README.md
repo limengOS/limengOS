@@ -44,6 +44,24 @@ The LimengOS is based on L4Re snapshots (ver: 22.04)  OS framework
 
 
 
+# Structural framework
+
+![](https://github.com/limengOS/limengOS/blob/main/doc/pic/whole.jpg)
+
+
+
+
+
+![](https://github.com/limengOS/limengOS/blob/main/doc/pic/vfs.jpg)
+
+
+
+![](https://github.com/limengOS/limengOS/blob/main/doc/pic/lwip.jpg)
+
+
+
+
+
 # Using BeagleBone with an SD (microSD) card
 
 Need SD card to run Pre-buit Image
@@ -645,20 +663,6 @@ BeagleBone Black :
   [https://beagleboard.org/getting-started](https://beagleboard.org/getting-started)
 
 
-
-# Structural framework
-
-![](https://github.com/limengOS/limengOS/blob/main/doc/pic/whole.jpg)
-
-
-
-
-
-![](https://github.com/limengOS/limengOS/blob/main/doc/pic/vfs.jpg)
-
-
-
-![](https://github.com/limengOS/limengOS/blob/main/doc/pic/lwip.jpg)
 
 
 
