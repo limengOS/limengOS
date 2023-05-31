@@ -646,6 +646,22 @@ BeagleBone Black :
 
 
 
+# Structural framework
+
+![](https://github.com/limengOS/limengOS/blob/main/doc/pic/whole.jpg)
+
+
+
+
+
+![](https://github.com/limengOS/limengOS/blob/main/doc/pic/vfs.jpg)
+
+
+
+![](https://github.com/limengOS/limengOS/blob/main/doc/pic/lwip.jpg)
+
+
+
 Host system requirements
 ========================
 
