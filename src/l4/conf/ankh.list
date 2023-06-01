@@ -12,10 +12,7 @@ module l4re
 module io
 module ned
 module ankh
-module morpong
-module morping
 module wget_clnt
-
 module lwip_test
 module test/L4Re.html
 
