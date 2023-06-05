@@ -1814,12 +1814,12 @@ int page_referenced(struct page *page,
 		else if (page->mapping)
 			referenced += page_referenced_file(page, mem_cont,
 								vm_flags);
+#endif
 		if (we_locked)
 			unlock_page(page);
 
 		if (page_test_and_clear_young(page_to_pfn(page)))
 			referenced++;
-#endif
 	}
 out:
 	return referenced;
