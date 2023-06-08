@@ -2136,7 +2136,6 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
 		goto nopage;
 
 restart:
-#ifndef DDE_LINUX
 	if (!(gfp_mask & __GFP_NO_KSWAPD))
 		wake_all_kswapd(order, zonelist, high_zoneidx,
 						zone_idx(preferred_zone));
@@ -2184,7 +2183,6 @@ rebalance:
 	/* Avoid allocations with no watermarks from looping endlessly */
 	if (test_thread_flag(TIF_MEMDIE) && !(gfp_mask & __GFP_NOFAIL))
 		goto nopage;
-#endif
 
 	/*
 	 * Try direct compaction. The first pass is asynchronous. Subsequent
