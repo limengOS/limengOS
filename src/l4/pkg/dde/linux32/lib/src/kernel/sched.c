@@ -5935,11 +5935,15 @@ void __sched io_schedule(void)
 
 	delayacct_blkio_start();
 	atomic_inc(&rq->nr_iowait);
+#ifdef DDE_LINUX
     blk_flush_plug(current);
     current->in_iowait = 1;
 	__set_current_state(TASK_RUNNING);
+#endif
 	schedule();
+#ifdef DDE_LINUX
     current->in_iowait = 0;
+#endif
 	atomic_dec(&rq->nr_iowait);
 	delayacct_blkio_end();
 }
@@ -5952,11 +5956,15 @@ long __sched io_schedule_timeout(long timeout)
 
 	delayacct_blkio_start();
 	atomic_inc(&rq->nr_iowait);
+#ifdef DDE_LINUX
     blk_flush_plug(current);
     current->in_iowait = 1;
 	__set_current_state(TASK_INTERRUPTIBLE);
+#endif
 	ret = schedule_timeout(timeout);
+#ifdef DDE_LINUX
     current->in_iowait = 0;
+#endif
 	atomic_dec(&rq->nr_iowait);
 	delayacct_blkio_end();
 	return ret;
