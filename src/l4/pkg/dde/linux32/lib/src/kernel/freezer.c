@@ -40,9 +40,11 @@ void refrigerator(void)
 	save = current->state;
 	pr_debug("%s entered refrigerator\n", current->comm);
 
+#ifndef  DDE_LINUX
 	spin_lock_irq(&current->sighand->siglock);
 	recalc_sigpending(); /* We sent fake signal, clean it up */
 	spin_unlock_irq(&current->sighand->siglock);
+#endif
 
 	/* prevent accounting of that task to load */
 	current->flags |= PF_FREEZING;
