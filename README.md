@@ -650,11 +650,11 @@ Open the  browser.
 
 Type lwip IP addesss : 192.168.3.26
 
- ![](https://github.com/limengOS/limengOS/blob/main/doc/pic/lwip_http.png)
+ ![./doc/pic/lwip_http.png](./doc/pic/lwip_http.png)
 
 BeagleBone Black :
 
-  [https://beagleboard.org/getting-started](https://beagleboard.org/getting-started)
+  [https://beagleboard.org/black](https://beagleboard.org/black)
 
 
 
