@@ -46,17 +46,17 @@ The LimengOS is based on L4Re snapshots (ver: 22.04)  OS framework
 
 # Structural framework
 
-![avatar](./doc/pic/whole.jpg)
+![./doc/pic/whole.jpg](./doc/pic/whole.jpg)
 
 
 
 
 
-![](https://github.com/limengOS/limengOS/blob/main/doc/pic/vfs.jpg)
+![./doc/pic/vfs.jpg](./doc/pic/vfs.jpg)
 
 
 
-![](https://github.com/limengOS/limengOS/blob/main/doc/pic/lwip.jpg)
+![./doc/pic/lwip.jpg](./doc/pic/lwip.jpg)
 
 
 
